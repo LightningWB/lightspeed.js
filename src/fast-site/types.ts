@@ -2,47 +2,53 @@ import * as http from "http";
 export type startUpOptions =
 {
 	/**
-	 * The port the server will listen on.
-	 * 
-	 * 80 is default for http and 443 is default for https
+	 * the certificate if you are using https
 	 */
-	port?:80,
+	cert?:'',
 	/**
-	 * Serve files from the disk or memory
+	 * functions to be executed by visiting pages
 	 */
-	staticPage?:true,
+	functions?:{internalFunction},
+	/**
+	 * amount of get requests per minute per ip
+	 */
+	getPerMinute?:1000,
+	/**
+	 * Allow iframes
+	 */
+	iframe?:false,
+	/**
+	 * the key if you are using https
+	 */
+	key?:'',
 	/**
 	 * The directory with site pages
 	 */
 	pagesLocation?:'/site',
 	/**
-	 * If this is true someone can just make bad requests and spam the console
+	 * The port the server will listen on.
+	 * 
+	 * 80 is default
+	 * 
+	 * http uses 80 and https uses 443
 	 */
-	printErrors?:true,
+	port?:80,
+	/**
+	 * The function to handle post requests
+	 */
+	postHandler?:(data: any, req: http.ClientRequest, res: http.ServerResponse)=>any,
+	/**
+	 * amount of post requests per minute per ip
+	 */
+	postPerMinute?:10,
 	/**
 	 * The amount of time in milliseconds before a post request is closed
 	 */
 	postTime?:15000,
 	/**
-	 * If a rest API should be set up
+	 * If this is true someone can just make 404 requests and spam the console
 	 */
-	restApi?:false,
-	/**
-	 * The url prefix to interact with the api.
-	 */
-	restPrefix?:'/rest',
-	/**
-	 * Path to json files
-	 */
-	restLocation?:'/restJSON',
-	/**
-	 * The default file extension for the rest api
-	 */
-	restFileExtension:'json',
-	/**
-	 * Allow iframes
-	 */
-	iframe?:false,
+	printErrors?:true,
 	/**
 	 * the protocol to be used
 	 * 
@@ -50,51 +56,48 @@ export type startUpOptions =
 	 */
 	protocol?:'http'|'https',
 	/**
-	 * the key if you are using https
+	 * If a rest API should be set up
 	 */
-	key?:'',
+	restApi?:false,
 	/**
-	 * the certificate if you are using https
+	 * The default file extension for the rest api
 	 */
-	cert?:'',
+	restFileExtension:'json',
 	/**
-	 * amount of get requests per minute per ip
+	 * Path to json files
 	 */
-	getPerMinute?:1000,
+	restLocation?:'/restJSON',
 	/**
-	 * amount of post requests per minute per ip
+	 * The url prefix to interact with the api.
 	 */
-	postPerMinute?:10,
+	restPrefix?:'/rest',
 	/**
-	 * functions to be executed by visiting pages
+	 * Serve files from the disk or memory
 	 */
-	functions?:{internalFunction},
+	staticPage?:true,
 	/**
-	 * The function to handle post requests
+	 * File extension to be sued for template files
 	 */
-	postHandler?:(data: any, req: http.ClientRequest, res: http.ServerResponse)=>any,
+	templateFileExtension?:'template',
 	/**
 	 * Path to template files
 	 */
 	templateLocation?:'/templates',
-	/**
-	 * File extension to be sued for template files
-	 */
-	templateFileExtension?:'template'
 }
 
 export type internalFunction = (req: http.ClientRequest)=>any;
+type reloadFiles = ()=>void;
 
 type serverAccess =
 {
 	/**
+	 * Reloads all the server files
+	 */
+	reloadFiles:reloadFiles
+	/**
 	 * the server object
 	 */
 	server:http.Server,
-	/**
-	 * Reloads all the server files
-	 */
-	reloadFiles:Function
 }
 
 type postCB = (data: any, req: http.ClientRequest, res: http.ServerResponse)=>any;
