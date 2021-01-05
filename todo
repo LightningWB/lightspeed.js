@@ -1,25 +1,26 @@
-- request handeling @done
-- post compatability @done
-- types @done
-- multi site compat @done 
-- static pages @done
-- rest api @done
-- iframes @done
-- https @done
-- request limiting @done
-- command parser @done
-- templates @done
-- includeing html from other files @done
-running js in html file:
-	- caling functions @done
-	- add it to static rest, pages, dynamic rest, pages @done
-	- add more ways to run js?
-- add getPage methoid to rest dynamic @done
-- using js to write to file. exmaple would be doing vists that day or something
-- asynchronize get page @done
-- alphabetize type file
-- some security stuff
-- name it
-- examples and make documentation site for it
-- github stuff
-- package it up adn release to npm
+1.0.0:
+	- request handeling @done
+	- post compatability @done
+	- types @done
+	- multi site compat @done 
+	- static pages @done
+	- rest api @done
+	- iframes @done
+	- https @done
+	- request limiting @done
+	- command parser @done
+	- templates @done
+	- includeing html from other files @done
+	running js in html file:
+		- caling functions @done
+		- add it to static rest, pages, dynamic rest, pages @done
+		- add more ways to run js?
+	- add getPage methoid to rest dynamic @done
+	- using js to write to file. exmaple would be doing vists that day or something
+	- asynchronize get page @done
+	- alphabetize type file @done
+	- some security stuff
+	- name it @done
+	- examples and make documentation site for it
+	- github stuff
+	- package it up and release to npm
