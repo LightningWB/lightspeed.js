@@ -132,7 +132,8 @@ function callFuncs(functions, req)
 function handleReq(req, res)
 {
 	const urlData = url.parse(req.url);
-	const fileType=urlData.pathname.split('.')[1];
+	const splitUp = urlData.pathname.split('.');
+	const fileType = splitUp.length===1?undefined:splitUp[splitUp.length-1];// it uses undefined later on to add .html if it has no extension
 	if(!options.iframe)res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 	if(options.restApi && urlData.pathname.indexOf(options.restPrefix+'/')==0)// rest api
 	{
@@ -179,8 +180,9 @@ function handleReq(req, res)
 		else if(fileType==='png')res.writeHead(200,{'Content-Type':'img/png'});
 		else if(fileType==='jpg')res.writeHead(200,{'Content-Type':'img/jpg'});
 		else if(fileType==='html'||fileType===undefined)res.writeHead(200,{'Content-Type':'text/html'});   
-		if(urlData.pathname[urlData.pathname.length-1]==='/')urlData.pathname+='index.html';
-		else if(fileType===undefined)urlData.pathname+='.html';
+		if(urlData.pathname[urlData.pathname.length-1]==='/')urlData.pathname+='index.html';// an example would be https:example.example/about/ would redirect to about/index.html
+		else if(fileType===undefined)urlData.pathname+='.html';// if there is no file extension and it doesnt end in /
+		// ^ an example of this is https:example.example/about would redirect to about.html
 		// static page is found or reading from files
 		if(pages[urlData.pathname]!=undefined||!options.staticPage)
 		{
