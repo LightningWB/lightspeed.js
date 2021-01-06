@@ -23,4 +23,5 @@
 	- name it @done
 	- examples and make documentation site for it
 	- github stuff
+	- vscode extension
 	- package it up and release to npm
