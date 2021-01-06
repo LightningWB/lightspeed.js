@@ -1,4 +1,4 @@
-const siteFrame = require('../src/fast-site')
+const siteFrame = require('../src/lightspeedjs')
 const fs = require('fs');
 
 /*siteFrame.startServer({
