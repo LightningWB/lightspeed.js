@@ -151,7 +151,6 @@ function handleReq(req, res)
 	if(!options.iframe)res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 	if(options.restApi && urlData.pathname.indexOf(options.restPrefix+'/')==0)// rest api
 	{
-		if(fileType!=options.restFileExtension&&fileType!=undefined)return res.end('{"fail":true,"reason":"not json"}');// fail if not json
 		if(urlData.pathname[urlData.pathname.length-1]==='/')urlData.pathname+='index.'+options.restFileExtension;
 		else if(fileType===undefined)urlData.pathname+='.'+options.restFileExtension;
 		res.writeHead(200, {'Content-Type':'text/json'});
