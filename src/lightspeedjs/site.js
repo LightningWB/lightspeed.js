@@ -134,7 +134,7 @@ function callFuncs(functions, req)
  */
 function sendPage(res, page, fromRest=false)
 {
-	if(options.jQuery)page+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>'
+	if(options.jQuery && !fromRest)page+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>'
 	res.end(page);
 }
 
