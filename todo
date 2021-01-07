@@ -12,16 +12,17 @@
 	- templates @done
 	- includeing html from other files @done
 	running js in html file:
+		before and after page served functions
 		- caling functions @done
 		- add it to static rest, pages, dynamic rest, pages @done
 		- add more ways to run js?
 	- add getPage methoid to rest dynamic @done
-	- using js to write to file. exmaple would be doing vists that day or something
+	- using js to write to file. exmaple would be doing vists that day or something @done
 	- asynchronize get page @done
 	- alphabetize type file @done
 	- some security stuff
 	- name it @done
 	- examples and make documentation site for it
-	- github stuff
+	- github stuff @done
 	- vscode extension
 	- package it up and release to npm

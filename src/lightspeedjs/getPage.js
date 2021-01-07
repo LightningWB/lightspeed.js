@@ -1,6 +1,7 @@
 "use strict";
 const fs = require('fs');
 const path = require('path');
+const crypto = require('./crypto');
 const settings =
 {
 	startPrefix:'@&',// reminder that changing these require you to change regex bellow
@@ -8,7 +9,8 @@ const settings =
 	startParam:'[',
 	endParam:']',
 	splitter:'|',
-	functionActions:['function']
+	functionActions:['function', 'variable'],
+	variableMarker:'__variable__'
 }
 
 /**
@@ -30,6 +32,7 @@ function parseAction(input)
 async function getReplacer(options, action, err)
 {
 	//console.log(action);
+	//console.log(action.action)
 	switch (action.action)
 	{
 		case 'include':
@@ -64,17 +67,50 @@ async function getReplacer(options, action, err)
 	}
 }
 
-function getFunctions(action)
+/**
+ * 
+ * @param {Object} action the action parsed
+ */
+function getAdditionalData(action)
 {
 	//console.log(action);
+	let returns = {};
 	switch (action.action)
 	{
 		case 'function':
 			let functions = action.parameters;
-			return functions;
+			returns.functions = functions;
+			break;
 		default:// let it show as what they entered if no action is available
 			return action.action+settings.startParam+action.parameters.join(settings.splitter)+settings.endParam;
 	}
+	return returns;
+}
+
+/**
+ * 
+ * @param {Object} action 
+ * @returns {import('./types').variable}
+ */
+function getVariables(action)
+{
+	let returns = {};
+	if(action.action === 'variable')
+	{
+		if(action.parameters.length===0)return console.log('Error: a variable must be passed for the variable command');
+		let variableName = action.parameters[0];
+		returns =
+		{
+			name:variableName,
+			key:
+				settings.variableMarker+
+				crypto.genRandomString(20)+
+				variableName+
+				crypto.genRandomString(20)+
+				settings.variableMarker
+		};
+	}
+	return returns;
 }
 
 /**
@@ -94,9 +130,14 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 			try
 			{
 				if(err)er(err);
+				let result =
+				{
+					page:data,
+					functions:[],
+					variables:[]
+				};
 				if(data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// only do this if it is doing special commands
 				{
-					let functions = [];
 					while(data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// turns out that doing a while loop and adding data to it automatically parses included files
 					{
 						data = data.toString();
@@ -104,6 +145,7 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 						const endIndex = data.indexOf(settings.endPrefix);
 						const action = data.substring(startIndex+settings.startPrefix.length, endIndex);
 						let replacer = '';
+						let additionalData={};
 						const actions = parseAction(action);
 						if(!settings.functionActions.includes(actions.action))
 							replacer = await getReplacer(
@@ -117,27 +159,26 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 								actions,
 								er
 							);
-						else functions = getFunctions(actions);// maybe I will do async functions or something
+						else if(actions.action==='variable')
+						{
+							let variableData = getVariables(actions);
+							replacer = variableData.key;
+							result.variables.push(variableData);
+							//console.log(variableData);
+						}
+						else additionalData = getAdditionalData(actions);// maybe I will do async functions or something
+						if(additionalData.functions!=undefined)result.functions = result.functions.concat(additionalData.functions);
 						data = data.substr(0, startIndex) + replacer + data.substr(endIndex+settings.endPrefix.length, data.length-startIndex);// insert the new stuff
 					}
 					data = data.replace(/@\\&/g, settings.startPrefix).replace(/&\\@/g, settings.endPrefix);
-					cb(
-						{
-							page:data,
-							functions:functions
-						}
-					);
+					result.page = data;
+					cb(result);
 				}
-				else 
-				cb(
-					{
-						page:data,
-						functions:[]
-					}
-				);
+				else cb(result);
 			}
 			catch(err)
 			{
+				console.log(err)
 				er(err)
 			}
 		}

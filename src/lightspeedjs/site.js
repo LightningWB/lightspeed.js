@@ -44,6 +44,7 @@ const options =
 	templateFileExtension:'template',
 	__dirname:__dirname,
 	jQuery:false,
+	variables:{},
 }
 //#endregion
 //#region File handling
@@ -120,22 +121,37 @@ function reloadFiles()
 //#region webserver functions
 const redirect = (res, location)=>res.end('<!DOCTYPE html><html><head><title>Redirecting</title></head><body>Redirecting...</body><script>window.location=window.location.origin+"'+location+'"</script></html>');
 
-function callFuncs(functions, req)
+function callFuncs(functions, queries, req)
 {
-	try{for(const func of functions)options.functions[func](req);}
+	try{for(const func of functions)options.functions[func](req, queries);}
 	catch(err){if(options.printErrors)console.log(err);}
 }
 
 /**
  * send the page and perform and needed operations to the page
  * @param {import('http').ServerResponse} res 
- * @param {*} page 
+ * @param {import('./types').pages} page 
+ * @param {url.UrlWithParsedQuery} urlData
  * @param {Boolean} fromRest
  */
-function sendPage(res, page, fromRest=false)
+function sendPage(req, res, page, urlData, fromRest=false)
 {
-	if(options.jQuery && !fromRest)page+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>'
-	res.end(page);
+	let pageNew = page.page;
+	if(options.jQuery && !fromRest)pageNew+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
+	callFuncs(page.functions, urlData.query, req);
+	try
+	{
+		for(let variable of page.variables)
+		{
+			const regEx = new RegExp(variable.key, 'g')
+			pageNew = pageNew.replace(regEx, options.variables[variable.name]);
+		}
+	}
+	catch(err)
+	{
+		console.log('Error in variable writing', err);
+	}
+	res.end(pageNew);
 }
 
 /**
@@ -145,7 +161,7 @@ function sendPage(res, page, fromRest=false)
  */
 function handleReq(req, res)
 {
-	const urlData = url.parse(req.url);
+	const urlData = url.parse(req.url, true);
 	const splitUp = urlData.pathname.split('.');
 	const fileType = splitUp.length===1?undefined:splitUp[splitUp.length-1];// it uses undefined later on to add .html if it has no extension
 	if(!options.iframe)res.setHeader('X-Frame-Options', 'SAMEORIGIN');
@@ -158,8 +174,8 @@ function handleReq(req, res)
 		{
 			if(options.staticPage)
 			{
-				callFuncs(restData[urlData.pathname.replace(options.restPrefix, '')].functions, req)
-				return sendPage(res, restData[urlData.pathname.replace(options.restPrefix, '')].page, true);
+				//callFuncs(restData[urlData.pathname.replace(options.restPrefix, '')].functions, req)
+				return sendPage(req, res, restData[urlData.pathname.replace(options.restPrefix, '')], urlData, true);
 			}
 			else
 			{
@@ -169,9 +185,9 @@ function handleReq(req, res)
 					path.join(__dirname, options.pagesLocation),
 					(data)=>
 					{
-						callFuncs(data.functions)
+						//callFuncs(data.functions)
 						//res.end(data.page);
-						sendPage(res, data.page, true);
+						sendPage(req, res, data, urlData, true);
 					},
 					err=>
 					{
@@ -202,8 +218,7 @@ function handleReq(req, res)
 		{
 			if(options.staticPage)
 			{
-				callFuncs(pages[urlData.pathname].functions)
-				return sendPage(res, pages[urlData.pathname].page, false);
+				return sendPage(req, res, pages[urlData.pathname], urlData, false);
 			}
 			else
 			{
@@ -214,8 +229,7 @@ function handleReq(req, res)
 					path.join(__dirname, options.pagesLocation),
 					(data)=>
 					{
-						callFuncs(data.functions)
-						sendPage(res, data.page, false)
+						sendPage(req, res, data, urlData, false)
 					},
 					(err)=>
 					{

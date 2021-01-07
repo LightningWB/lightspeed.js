@@ -1,6 +1,10 @@
 const siteFrame = require('../src/lightspeedjs')
 const fs = require('fs');
-
+const pageVars = 
+{
+	test:1,
+	visits:0
+};
 /*siteFrame.startServer({
 	port:443,
 	staticPage:false,
@@ -16,16 +20,24 @@ const fs = require('fs');
 
 siteFrame.startServer({
 	port:80,
-	staticPage:false,
+	staticPage:true,
 	pagesLocation:'./pages',
 	printErrors:true,
 	restApi:true,
-	restPath:'./restJSON',
+	restLocation:'./restJSON',
 	restPrefix:'/r',
 	functions:
 	{
-		//foo:()=>console.log('foo')
+		foo:(req, queries)=>{console.log('queries:', JSON.stringify(queries), 'visited');pageVars.visits++;}
 	},
 	postHandler:(data, req, res)=>{console.log(data);res.end('ok')},
-	jQuery:false
+	jQuery:false,
+	variables:pageVars
 });
+
+setInterval(
+	()=>{
+		pageVars.test++
+	},
+	1000
+)

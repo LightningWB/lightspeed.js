@@ -1,4 +1,5 @@
 import * as http from "http";
+import * as url from "url";
 export type startUpOptions =
 {
 	/**
@@ -87,9 +88,15 @@ export type startUpOptions =
 	 * Path to template files
 	 */
 	templateLocation?:'/templates',
+	/**
+	 * The variables accessible to the internal variable commands
+	 * 
+	 * You can edit this object while running to change variables
+	 */
+	variables:{},
 }
 
-export type internalFunction = (req: http.ClientRequest)=>any;
+export type internalFunction = (req: http.ClientRequest, queries:url.UrlWithParsedQuery)=>any;
 type reloadFiles = ()=>void;
 
 type serverAccess =
@@ -105,5 +112,27 @@ type serverAccess =
 }
 
 type postCB = (data: any, req: http.ClientRequest, res: http.ServerResponse)=>any;
+
+export type variable =
+{
+	/**
+	 * variable name
+	 */
+	name:String,
+	/**
+	 * The random key to use to replace the value with real variable
+	 * 
+	 * it should be randomString+name+randomString
+	 */
+	key:String
+}
+
+export type pages =
+{
+	page:String,
+	functions:Function[],
+	variables:variable[]
+}
+
 // ignore these errors as this code doesn't run
 export function startServer(ops: startUpOptions = {}): serverAccess;
