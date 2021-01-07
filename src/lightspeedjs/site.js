@@ -48,7 +48,7 @@ const options =
 //#region File handling
 function getAllFilesInDir(dirPath, arrayOfFiles)
 {
-	files = fs.readdirSync(dirPath);
+	const files = fs.readdirSync(dirPath);
 	arrayOfFiles = arrayOfFiles || [];
 	files.forEach((file)=>
 	{
@@ -117,7 +117,7 @@ function reloadFiles()
 }
 //#endregion
 //#region webserver stuff
-redirect = (res, location)=>res.end('<!DOCTYPE html><html><head><title>Redirecting</title></head><body>Redirecting...</body><script>window.location=window.location.origin+"'+location+'"</script></html>');
+const redirect = (res, location)=>res.end('<!DOCTYPE html><html><head><title>Redirecting</title></head><body>Redirecting...</body><script>window.location=window.location.origin+"'+location+'"</script></html>');
 
 function callFuncs(functions, req)
 {
@@ -126,9 +126,20 @@ function callFuncs(functions, req)
 }
 
 /**
+ * send the page and perform and needed operations to the page
+ * @param {import('http').ServerResponse} res 
+ * @param {*} page 
+ * @param {Boolean} fromRest
+ */
+function sendPage(res, page, fromRest=false)
+{
+	res.end(page);
+}
+
+/**
  * 
- * @param {http.ClientRequest} req 
- * @param {http.ServerResponse} res 
+ * @param {import('http').ClientRequest} req 
+ * @param {import('http').ServerResponse} res 
  */
 function handleReq(req, res)
 {
@@ -147,7 +158,7 @@ function handleReq(req, res)
 			if(options.staticPage)
 			{
 				callFuncs(restData[urlData.pathname.replace(options.restPrefix, '')].functions, req)
-				return res.end(restData[urlData.pathname.replace(options.restPrefix, '')].page);
+				return sendPage(res, restData[urlData.pathname.replace(options.restPrefix, '')].page, true);
 			}
 			else
 			{
@@ -158,7 +169,8 @@ function handleReq(req, res)
 					(data)=>
 					{
 						callFuncs(data.functions)
-						res.end(data.page);
+						//res.end(data.page);
+						sendPage(res, data.page, true);
 					},
 					err=>
 					{
@@ -190,7 +202,7 @@ function handleReq(req, res)
 			if(options.staticPage)
 			{
 				callFuncs(pages[urlData.pathname].functions)
-				return res.end(pages[urlData.pathname].page);
+				return sendPage(res, pages[urlData.pathname].page, false);
 			}
 			else
 			{
@@ -202,7 +214,7 @@ function handleReq(req, res)
 					(data)=>
 					{
 						callFuncs(data.functions)
-						res.end(data.page)
+						sendPage(res, data.page, false)
 					},
 					(err)=>
 					{

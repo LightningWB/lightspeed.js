@@ -16,7 +16,7 @@ const fs = require('fs');
 
 siteFrame.startServer({
 	port:80,
-	staticPage:true,
+	staticPage:false,
 	pagesLocation:'./pages',
 	printErrors:true,
 	restApi:true,

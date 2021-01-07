@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const settings =
 {
-	startPrefix:'@&',// reminded that changing these require you to change regex bellow
+	startPrefix:'@&',// reminder that changing these require you to change regex bellow
 	endPrefix:'&@',
 	startParam:'[',
 	endParam:']',
@@ -70,7 +70,7 @@ function getFunctions(action)
 	switch (action.action)
 	{
 		case 'function':
-			functions = action.parameters;
+			let functions = action.parameters;
 			return functions;
 		default:// let it show as what they entered if no action is available
 			return action.action+settings.startParam+action.parameters.join(settings.splitter)+settings.endParam;
