@@ -27,5 +27,5 @@ siteFrame.startServer({
 		//foo:()=>console.log('foo')
 	},
 	postHandler:(data, req, res)=>{console.log(data);res.end('ok')},
-	//getPerMinute:1
+	jQuery:false
 });

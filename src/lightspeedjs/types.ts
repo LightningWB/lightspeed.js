@@ -18,6 +18,10 @@ export type startUpOptions =
 	 */
 	iframe?:false,
 	/**
+	 * Include jQuery or not
+	 */
+	jQuery:false,
+	/**
 	 * the key if you are using https
 	 */
 	key?:'',

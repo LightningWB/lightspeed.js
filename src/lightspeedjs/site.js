@@ -42,7 +42,8 @@ const options =
 	postHandler:()=>{},
 	templateLocation:'/templates',
 	templateFileExtension:'template',
-	__dirname:__dirname
+	__dirname:__dirname,
+	jQuery:false,
 }
 //#endregion
 //#region File handling
@@ -116,7 +117,7 @@ function reloadFiles()
 	if(options.restApi)setRest();
 }
 //#endregion
-//#region webserver stuff
+//#region webserver functions
 const redirect = (res, location)=>res.end('<!DOCTYPE html><html><head><title>Redirecting</title></head><body>Redirecting...</body><script>window.location=window.location.origin+"'+location+'"</script></html>');
 
 function callFuncs(functions, req)
@@ -133,6 +134,7 @@ function callFuncs(functions, req)
  */
 function sendPage(res, page, fromRest=false)
 {
+	if(options.jQuery)page+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>'
 	res.end(page);
 }
 
