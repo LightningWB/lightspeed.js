@@ -1,4 +1,5 @@
 //#region imports
+"use strict";
 let http;// declare at as a global so you can require it as http or https in the start server function
 const url = require('url');
 const fs = require('fs');
