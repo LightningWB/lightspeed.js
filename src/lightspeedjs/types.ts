@@ -70,7 +70,7 @@ export type startUpOptions =
 	/**
 	 * Path to json files
 	 */
-	restLocation?:'/restJSON',
+	restLocation?:'/rest',
 	/**
 	 * The url prefix to interact with the api.
 	 */

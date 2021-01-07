@@ -30,7 +30,7 @@ const options =
 	postTime:15*1000,
 	restApi:false,
 	restPrefix:'/rest',
-	restLocation:'/restJSON',
+	restLocation:'/rest',
 	restFileExtension:'json',
 	iframe:false,
 	protocol:'http',
