@@ -12,7 +12,9 @@
 	- templates @done
 	- includeing html from other files @done
 	running js in html file:
-		before and after page served functions
+		- before and after page served functions @done
+		- return js function. Example returnFunction[loadForumPages] will do the result of loadForumPages()
+		- return js async function. same as ^ but async for db calls or somethin
 		- caling functions @done
 		- add it to static rest, pages, dynamic rest, pages @done
 		- add more ways to run js?

@@ -9,7 +9,7 @@ const settings =
 	startParam:'[',
 	endParam:']',
 	splitter:'|',
-	functionActions:['function', 'variable'],
+	notReplaceFunctions:['function', 'finishFunction', 'variable'],
 	variableMarker:'__variable__'
 }
 
@@ -26,7 +26,7 @@ function parseAction(input)
 	{
 		params[i]=params[i].trim().replace(/\\&/g, '&').replace(/\\@/g, '@').replace(/\\\|/g, '|');// each pass through it gets rid of a \
 	}
-	return {action:action.toLowerCase().trim(), parameters:params}
+	return {action:action.trim(), parameters:params}
 }
 
 async function getReplacer(options, action, err)
@@ -75,11 +75,16 @@ function getAdditionalData(action)
 {
 	//console.log(action);
 	let returns = {};
+	let functions;
 	switch (action.action)
 	{
 		case 'function':
-			let functions = action.parameters;
-			returns.functions = functions;
+			functions = action.parameters;
+			returns.beforeFunctions = functions;
+			break;
+		case 'finishFunction':
+			functions = action.parameters;
+			returns.afterFunctions = functions;
 			break;
 		default:// let it show as what they entered if no action is available
 			return action.action+settings.startParam+action.parameters.join(settings.splitter)+settings.endParam;
@@ -133,7 +138,8 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 				let result =
 				{
 					page:data,
-					functions:[],
+					beforeFunctions:[],
+					afterFunctions:[],
 					variables:[]
 				};
 				if(data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// only do this if it is doing special commands
@@ -147,7 +153,7 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 						let replacer = '';
 						let additionalData={};
 						const actions = parseAction(action);
-						if(!settings.functionActions.includes(actions.action))
+						if(!settings.notReplaceFunctions.includes(actions.action))
 							replacer = await getReplacer(
 								{
 									homeLocation:homeLocation,
@@ -167,7 +173,8 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 							//console.log(variableData);
 						}
 						else additionalData = getAdditionalData(actions);// maybe I will do async functions or something
-						if(additionalData.functions!=undefined)result.functions = result.functions.concat(additionalData.functions);
+						if(additionalData.beforeFunctions!=undefined)result.beforeFunctions = result.beforeFunctions.concat(additionalData.beforeFunctions);// add before functions to list
+						if(additionalData.afterFunctions!=undefined)result.afterFunctions = result.afterFunctions.concat(additionalData.afterFunctions);// add after functions to list
 						data = data.substr(0, startIndex) + replacer + data.substr(endIndex+settings.endPrefix.length, data.length-startIndex);// insert the new stuff
 					}
 					data = data.replace(/@\\&/g, settings.startPrefix).replace(/&\\@/g, settings.endPrefix);

@@ -138,7 +138,7 @@ function sendPage(req, res, page, urlData, fromRest=false)
 {
 	let pageNew = page.page;
 	if(options.jQuery && !fromRest)pageNew+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
-	callFuncs(page.functions, urlData.query, req);
+	callFuncs(page.beforeFunctions, urlData.query, req);
 	try
 	{
 		for(let variable of page.variables)
@@ -151,6 +151,7 @@ function sendPage(req, res, page, urlData, fromRest=false)
 	{
 		console.log('Error in variable writing', err);
 	}
+	callFuncs(page.afterFunctions, urlData.query, req);
 	res.end(pageNew);
 }
 

@@ -130,7 +130,8 @@ export type variable =
 export type pages =
 {
 	page:String,
-	functions:Function[],
+	beforeFunctions:internalFunction[],
+	afterFunctions:internalFunction[],
 	variables:variable[]
 }
 
