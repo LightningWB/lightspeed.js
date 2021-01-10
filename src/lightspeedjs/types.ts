@@ -21,7 +21,7 @@ export type startUpOptions =
 	/**
 	 * Include jQuery or not
 	 */
-	jQuery:false,
+	jQuery?:false,
 	/**
 	 * the key if you are using https
 	 */
@@ -61,13 +61,17 @@ export type startUpOptions =
 	 */
 	protocol?:'http'|'https',
 	/**
+	 * Functions that are able to return js
+	 */
+	returnFunctions?:{},
+	/**
 	 * If a rest API should be set up
 	 */
 	restApi?:false,
 	/**
 	 * The default file extension for the rest api
 	 */
-	restFileExtension:'json',
+	restFileExtension?:'json',
 	/**
 	 * Path to json files
 	 */
@@ -93,7 +97,7 @@ export type startUpOptions =
 	 * 
 	 * You can edit this object while running to change variables
 	 */
-	variables:{},
+	variables?:{},
 }
 
 export type internalFunction = (req: http.ClientRequest, queries:url.UrlWithParsedQuery)=>any;
@@ -132,7 +136,8 @@ export type pages =
 	page:String,
 	beforeFunctions:internalFunction[],
 	afterFunctions:internalFunction[],
-	variables:variable[]
+	variables:variable[],
+	returnFunctions:internalFunction[]
 }
 
 // ignore these errors as this code doesn't run

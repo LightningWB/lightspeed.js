@@ -45,6 +45,7 @@ const options =
 	__dirname:__dirname,
 	jQuery:false,
 	variables:{},
+	returnFunctions:{},
 }
 //#endregion
 //#region File handling
@@ -145,6 +146,19 @@ function sendPage(req, res, page, urlData, fromRest=false)
 		{
 			const regEx = new RegExp(variable.key, 'g')
 			pageNew = pageNew.replace(regEx, options.variables[variable.name]);
+		}
+	}
+	catch(err)
+	{
+		console.log('Error in variable writing', err);
+	}
+	try
+	{
+		for(let func of page.returnFunctions)
+		{
+			console.log(func)
+			const regEx = new RegExp(func.key, 'g')
+			pageNew = pageNew.replace(regEx, options.returnFunctions[func.name]);
 		}
 	}
 	catch(err)

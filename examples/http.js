@@ -30,6 +30,10 @@ siteFrame.startServer({
 	{
 		foo:(req, queries)=>{console.log('queries:', JSON.stringify(queries), 'visited');pageVars.visits++;console.log(pageVars.visits)}
 	},
+	returnFunctions:
+	{
+		returnTest:()=>'test return function'
+	},
 	postHandler:(data, req, res)=>{console.log(data);res.end('ok')},
 	jQuery:false,
 	variables:pageVars

@@ -1,6 +1,7 @@
 "use strict";
 const fs = require('fs');
 const path = require('path');
+const { isRegExp } = require('util');
 const crypto = require('./crypto');
 const settings =
 {
@@ -9,10 +10,11 @@ const settings =
 	startParam:'[',
 	endParam:']',
 	splitter:'|',
-	variables:['variable'],
+	variables:['variable', 'returnFunction'],
 	functions:['function', 'finishFunction'],
 	combined:[''],
-	variableMarker:'__variable__'
+	variableMarker:'__variable__',
+	returnFunctionMarker:'__returnFunc__'
 }
 settings.combined=settings.variables.concat(settings.functions);// do this after values are set
 
@@ -118,6 +120,21 @@ function getVariables(action)
 				settings.variableMarker
 		};
 	}
+	else if(action.action=='returnFunction')
+	{
+		if(action.parameters.length===0)return console.log('Error: a function must be passed for the returnFunction command');
+		let functionName = action.parameters[0];
+		returns =
+		{
+			name:functionName,
+			key:
+				settings.returnFunctionMarker+
+				crypto.genRandomString(20)+
+				functionName+
+				crypto.genRandomString(20)+
+				settings.returnFunctionMarker
+		};
+	}
 	return returns;
 }
 
@@ -143,7 +160,8 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 					page:data,
 					beforeFunctions:[],
 					afterFunctions:[],
-					variables:[]
+					variables:[],
+					returnFunctions:[],
 				};
 				if(data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// only do this if it is doing special commands
 				{
@@ -170,10 +188,19 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 							);
 						else if(settings.variables.includes(actions.action))
 						{
-							let variableData = getVariables(actions);
-							replacer = variableData.key;
-							result.variables.push(variableData);
-							//console.log(variableData);
+							if(actions.action==='variable')
+							{
+								let variableData = getVariables(actions);
+								replacer = variableData.key;
+								result.variables.push(variableData);
+								//console.log(variableData);
+							}
+							else if(actions.action==='returnFunction')
+							{
+								let returnFunction = getVariables(actions);
+								replacer = returnFunction.key;
+								result.returnFunctions.push(returnFunction);
+							}
 						}
 						else if(settings.functions.includes(actions.action))
 						{
