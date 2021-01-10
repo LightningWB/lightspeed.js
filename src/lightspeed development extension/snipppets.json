@@ -46,5 +46,41 @@
 		"prefix":"@&variable&@",
 		"body":"@&variable[$1]&@",
 		"description":"sets a link to a variable"
+	},
+	"returnFunction":
+	{
+		"prefix":"@&returnFunction&@",
+		"body":"@&returnFunction[$1]&@",
+		"description":"runs a function and returns write the result to the page"
+	},
+	"@&returnFunction&@":
+	{
+		"prefix":"@&returnFunction&@",
+		"body":"@&returnFunction[$1]&@",
+		"description":"runs a function and returns write the result to the page"
+	},
+	"asyncReturnFunction":
+	{
+		"prefix":"@&asyncReturnFunction&@",
+		"body":"@&asyncReturnFunction[$1]&@",
+		"description":"runs a function asynchronously and returns write the result to the page"
+	},
+	"@&asyncReturnFunction&@":
+	{
+		"prefix":"@&asyncReturnFunction&@",
+		"body":"@&asyncReturnFunction[$1]&@",
+		"description":"runs a function asynchronously and returns write the result to the page"
+	},
+	"finishFunction":
+	{
+		"prefix":"@&finishFunction&@",
+		"body":"@&finishFunction[$1]&@",
+		"description":"runs a function after variables and return functions have run"
+	},
+	"@&finishFunction&@":
+	{
+		"prefix":"@&finishFunction&@",
+		"body":"@&finishFunction[$1]&@",
+		"description":"runs a function after variables and return functions have run"
 	}
 }
