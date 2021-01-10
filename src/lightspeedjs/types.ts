@@ -137,7 +137,8 @@ export type pages =
 	beforeFunctions:internalFunction[],
 	afterFunctions:internalFunction[],
 	variables:variable[],
-	returnFunctions:internalFunction[]
+	returnFunctions:internalFunction[],
+	asyncReturnFunctions:internalFunction[],
 }
 
 // ignore these errors as this code doesn't run

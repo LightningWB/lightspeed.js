@@ -1,5 +1,6 @@
 const siteFrame = require('../src/lightspeedjs')
 const fs = require('fs');
+const path = require('path');
 const pageVars = 
 {
 	test:1,
@@ -32,7 +33,11 @@ siteFrame.startServer({
 	},
 	returnFunctions:
 	{
-		returnTest:()=>'test return function'
+		returnTest:()=>'test return function',
+		asyncTest:async ()=>
+		{
+			return await fs.promises.readFile(path.join(__dirname, './exampleFile.txt'), 'utf-8');
+		}
 	},
 	postHandler:(data, req, res)=>{console.log(data);res.end('ok')},
 	jQuery:false,

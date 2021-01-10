@@ -10,13 +10,12 @@ const settings =
 	startParam:'[',
 	endParam:']',
 	splitter:'|',
-	variables:['variable', 'returnFunction'],
+	replacerFunctions:['variable', 'returnFunction', 'asyncReturnFunction'],
 	functions:['function', 'finishFunction'],
 	combined:[''],
-	variableMarker:'__variable__',
-	returnFunctionMarker:'__returnFunc__'
+	returnDynamicMarker:'__returnDynamicMarker__'
 }
-settings.combined=settings.variables.concat(settings.functions);// do this after values are set
+settings.combined=settings.replacerFunctions.concat(settings.functions);// do this after values are set
 
 /**
  * parses an action in the file
@@ -31,7 +30,7 @@ function parseAction(input)
 	{
 		params[i]=params[i].trim().replace(/\\&/g, '&').replace(/\\@/g, '@').replace(/\\\|/g, '|');// each pass through it gets rid of a \
 	}
-	return {action:action.trim(), parameters:params}
+	return {action:action.trim(), parameters:params.filter(item=>item!='')}
 }
 
 async function getReplacer(options, action, err)
@@ -97,6 +96,26 @@ function getAdditionalData(action)
 	return returns;
 }
 
+function getErrorMessage(actionName)
+{
+	let errorMessage = 'Error: '
+	switch (actionName)
+	{
+		case 'variable':
+			errorMessage+='a variable must be passed for the variable command';
+			break;
+		case 'returnFunction':
+			errorMessage+='a function must be passed for the returnFunction command';
+			break;
+		case 'asyncReturnFunction':
+			errorMessage+='a function must be passed for the asyncReturnFunction command';
+			break;
+		default:
+			break;
+	}
+	return errorMessage;
+}
+
 /**
  * 
  * @param {Object} action 
@@ -105,36 +124,24 @@ function getAdditionalData(action)
 function getVariables(action)
 {
 	let returns = {};
-	if(action.action === 'variable')
+	const errorMsg = getErrorMessage(action.action);
+	//console.log(action)
+	if(action.parameters.length===0)
 	{
-		if(action.parameters.length===0)return console.log('Error: a variable must be passed for the variable command');
-		let variableName = action.parameters[0];
-		returns =
-		{
-			name:variableName,
-			key:
-				settings.variableMarker+
-				crypto.genRandomString(20)+
-				variableName+
-				crypto.genRandomString(20)+
-				settings.variableMarker
-		};
+		console.log(errorMsg);
+		return 'fail';
 	}
-	else if(action.action=='returnFunction')
+	let dynamicDataName = action.parameters[0];
+	returns =
 	{
-		if(action.parameters.length===0)return console.log('Error: a function must be passed for the returnFunction command');
-		let functionName = action.parameters[0];
-		returns =
-		{
-			name:functionName,
-			key:
-				settings.returnFunctionMarker+
-				crypto.genRandomString(20)+
-				functionName+
-				crypto.genRandomString(20)+
-				settings.returnFunctionMarker
-		};
-	}
+		name:dynamicDataName,
+		key:
+			settings.returnDynamicMarker+
+			crypto.genRandomString(20)+
+			dynamicDataName+
+			crypto.genRandomString(20)+
+			settings.returnDynamicMarker
+	};
 	return returns;
 }
 
@@ -162,6 +169,7 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 					afterFunctions:[],
 					variables:[],
 					returnFunctions:[],
+					asyncReturnFunctions:[],
 				};
 				if(data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// only do this if it is doing special commands
 				{
@@ -186,20 +194,17 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 								actions,
 								er
 							);
-						else if(settings.variables.includes(actions.action))
+						else if(settings.replacerFunctions.includes(actions.action))
 						{
-							if(actions.action==='variable')
+							let replacerDynamicData = getVariables(actions);
+							if(replacerDynamicData!='fail')
 							{
-								let variableData = getVariables(actions);
-								replacer = variableData.key;
-								result.variables.push(variableData);
-								//console.log(variableData);
-							}
-							else if(actions.action==='returnFunction')
-							{
-								let returnFunction = getVariables(actions);
-								replacer = returnFunction.key;
-								result.returnFunctions.push(returnFunction);
+								replacer = replacerDynamicData.key;
+								let key;
+								if(actions.action==='variable')key='variables';
+								else if(actions.action==='returnFunction')key = 'returnFunctions';
+								else if(actions.action==='asyncReturnFunction')key = 'asyncReturnFunctions';
+								result[key].push(replacerDynamicData);
 							}
 						}
 						else if(settings.functions.includes(actions.action))

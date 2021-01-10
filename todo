@@ -14,7 +14,7 @@
 	running js in html file:
 		- before and after page served functions @done
 		- return js function. Example returnFunction[loadForumPages] will do the result of loadForumPages() @done
-		- return js async function. same as ^ but async for db calls or somethin
+		- return js async function. same as ^ but async for db calls or somethin @done
 		- caling functions @done
 		- add it to static rest, pages, dynamic rest, pages @done
 		- add more ways to run js?

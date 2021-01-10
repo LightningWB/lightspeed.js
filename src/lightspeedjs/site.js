@@ -135,12 +135,12 @@ function callFuncs(functions, queries, req)
  * @param {url.UrlWithParsedQuery} urlData
  * @param {Boolean} fromRest
  */
-function sendPage(req, res, page, urlData, fromRest=false)
+async function sendPage(req, res, page, urlData, fromRest=false)
 {
 	let pageNew = page.page;
 	if(options.jQuery && !fromRest)pageNew+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
 	callFuncs(page.beforeFunctions, urlData.query, req);
-	try
+	try// variables
 	{
 		for(let variable of page.variables)
 		{
@@ -152,13 +152,25 @@ function sendPage(req, res, page, urlData, fromRest=false)
 	{
 		console.log('Error in variable writing', err);
 	}
-	try
+	try// return functions
 	{
 		for(let func of page.returnFunctions)
 		{
+			const regEx = new RegExp(func.key, 'g')
+			pageNew = pageNew.replace(regEx, options.returnFunctions[func.name]());
+		}
+	}
+	catch(err)
+	{
+		console.log('Error in variable writing', err);
+	}
+	try// return async functions
+	{
+		for(let func of page.asyncReturnFunctions)
+		{
 			console.log(func)
 			const regEx = new RegExp(func.key, 'g')
-			pageNew = pageNew.replace(regEx, options.returnFunctions[func.name]);
+			pageNew = pageNew.replace(regEx, await options.returnFunctions[func.name]());
 		}
 	}
 	catch(err)
