@@ -9,9 +9,12 @@ const settings =
 	startParam:'[',
 	endParam:']',
 	splitter:'|',
-	notReplaceFunctions:['function', 'finishFunction', 'variable'],
+	variables:['variable'],
+	functions:['function', 'finishFunction'],
+	combined:[''],
 	variableMarker:'__variable__'
 }
+settings.combined=settings.variables.concat(settings.functions);// do this after values are set
 
 /**
  * parses an action in the file
@@ -153,7 +156,7 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 						let replacer = '';
 						let additionalData={};
 						const actions = parseAction(action);
-						if(!settings.notReplaceFunctions.includes(actions.action))
+						if(!settings.combined.includes(actions.action))
 							replacer = await getReplacer(
 								{
 									homeLocation:homeLocation,
@@ -165,16 +168,19 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 								actions,
 								er
 							);
-						else if(actions.action==='variable')
+						else if(settings.variables.includes(actions.action))
 						{
 							let variableData = getVariables(actions);
 							replacer = variableData.key;
 							result.variables.push(variableData);
 							//console.log(variableData);
 						}
-						else additionalData = getAdditionalData(actions);// maybe I will do async functions or something
-						if(additionalData.beforeFunctions!=undefined)result.beforeFunctions = result.beforeFunctions.concat(additionalData.beforeFunctions);// add before functions to list
-						if(additionalData.afterFunctions!=undefined)result.afterFunctions = result.afterFunctions.concat(additionalData.afterFunctions);// add after functions to list
+						else if(settings.functions.includes(actions.action))
+						{
+							additionalData = getAdditionalData(actions);// maybe I will do async functions or something
+							if(additionalData.beforeFunctions!=undefined)result.beforeFunctions = result.beforeFunctions.concat(additionalData.beforeFunctions);// add before functions to list
+							if(additionalData.afterFunctions!=undefined)result.afterFunctions = result.afterFunctions.concat(additionalData.afterFunctions);// add after functions to list
+						}
 						data = data.substr(0, startIndex) + replacer + data.substr(endIndex+settings.endPrefix.length, data.length-startIndex);// insert the new stuff
 					}
 					data = data.replace(/@\\&/g, settings.startPrefix).replace(/&\\@/g, settings.endPrefix);
