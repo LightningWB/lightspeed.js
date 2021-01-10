@@ -1,0 +1,50 @@
+{
+	"include":
+	{
+		"prefix":"include",
+		"body":"@&include[$1]&@",
+		"description":"includes a file"
+	},
+	"template":
+	{
+		"prefix":"template",
+		"body":"@&template[$1]&@",
+		"description":"runs a template"
+	},
+	"function":
+	{
+		"prefix":"function",
+		"body":"@&function[$1]&@",
+		"description":"sets a function to run"
+	},
+	"variable":
+	{
+		"prefix":"@&variable&@",
+		"body":"@&variable[$1]&@",
+		"description":"sets a link to a variable"
+	},
+	"@&include&@":
+	{
+		"prefix":"@&include&@",
+		"body":"@&include[$1]&@",
+		"description":"includes a file"
+	},
+	"@&template&@":
+	{
+		"prefix":"@&template&@",
+		"body":"@&template[$1]&@",
+		"description":"runs a template"
+	},
+	"@&function&@":
+	{
+		"prefix":"@&function&@",
+		"body":"@&function[$1]&@",
+		"description":"sets a function to run"
+	},
+	"@&variable&@":
+	{
+		"prefix":"@&variable&@",
+		"body":"@&variable[$1]&@",
+		"description":"sets a link to a variable"
+	}
+}

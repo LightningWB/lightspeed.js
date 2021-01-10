@@ -1,0 +1,42 @@
+  
+{
+	"name": "lightspeed",
+	"displayName": "Lightspeed.js",
+	"publisher": "LightnigWB",
+	"description": "An extension to provide snippets for the lightspeed.js frame work.",
+	"version": "1.0.0",
+	"license": "MIT",
+	"galleryBanner": {
+		"color": "#505050",
+		"theme": "dark"
+	},
+	"engines": {
+		"vscode": "^1.0.0"
+	},
+	"homepage": "https://github.com/LightningWB/lightspeed.js/blob/master/README.md",
+	"bugs": {
+		"url": "https://github.com/LightningWB/lightspeed.js/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/LightningWB/lightspeed.js.git"
+	},
+	"categories": [
+		"Snippets"
+	],
+	"keywords": [
+		"lightspeed",
+		"lightspeed.js",
+		"node",
+		"web",
+		"framework"
+	],
+	"contributes": {
+		"snippets": [
+			{
+				"language": "html",
+				"path": "./snippets.json"
+			}
+		]
+	}
+}
