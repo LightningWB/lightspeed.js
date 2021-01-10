@@ -2,3 +2,5 @@ test.js
 test.ts
 *.pem
 publish.bat
+.hidden/*
+.hidden
