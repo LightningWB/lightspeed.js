@@ -26,5 +26,6 @@
 	- name it @done
 	- examples and make documentation site for it
 	- github stuff @done
-	- vscode extension
+	- make it not run in a vm but have it all be scoped in a function
+	- vscode extension @done
 	- package it up and release to npm
