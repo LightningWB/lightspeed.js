@@ -23,7 +23,7 @@
 	- asynchronize get page @done
 	- alphabetize type file @done
 	some security stuff:
-		- csrf protection
+		- csrf protection @done
 		if any other vulnerabilities can be done without restricting the developer then they should be added here
 	- name it @done
 	- examples and make documentation site for it
