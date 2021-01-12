@@ -9,12 +9,12 @@ const serverCode = fs.readFileSync(__dirname+'/site.js');
  * @param {Function} post post request handler. error handling is included so your code can be nicer.
  * @returns {import('./types').serverAccess}
  */
-function startServer(ops={}, post=()=>{})
+function startServer(ops={})
 {
 	const context=
 	{
 		require:require, 
-		ops:ops, post:post, 
+		ops:ops,
 		console:{log:console.log},
 		__dirname:path.dirname(require.main.filename),
 		setTimeout:setTimeout,

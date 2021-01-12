@@ -7,6 +7,10 @@ export type startUpOptions =
 	 */
 	cert?:'',
 	/**
+	 * keep this at true unless you know what you are doing
+	 */
+	csrfProtection?:true,
+	/**
 	 * functions to be executed by visiting pages
 	 */
 	functions?:{internalFunction},

@@ -46,6 +46,7 @@ const options =
 	jQuery:false,
 	variables:{},
 	returnFunctions:{},
+	csrfProtection:true,
 }
 //#endregion
 //#region File handling
@@ -192,6 +193,7 @@ function handleReq(req, res)
 	const splitUp = urlData.pathname.split('.');
 	const fileType = splitUp.length===1?undefined:splitUp[splitUp.length-1];// it uses undefined later on to add .html if it has no extension
 	if(!options.iframe)res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+	if(options.csrfProtection)res.setHeader('set-cookie', 'csrfProtectionToken=true; Max-Age=86400; HttpOnly; SameSite=Strict');// a cookie with a max age of a day
 	if(options.restApi && urlData.pathname.indexOf(options.restPrefix+'/')==0)// rest api
 	{
 		if(urlData.pathname[urlData.pathname.length-1]==='/')urlData.pathname+='index.'+options.restFileExtension;
@@ -299,7 +301,7 @@ function handleReq(req, res)
  * @param {Function} post post request handler. error handling is included to your code can be nicer.
  * @returns {import('./types').S}
  */
-function startServer(ops={}, post=()=>{})
+function startServer(ops={})
 {
 	/**
 	 * 
@@ -312,12 +314,23 @@ function startServer(ops={}, post=()=>{})
 		{
 			if(req.method==='POST')
 			{
-				if(ipLimit.post[req.connection.remoteAddress]!=undefined && ipLimit.post[req.connection.remoteAddress]>options.postPerMinute)return res.end('spam');
+				if(
+					ipLimit.post[req.connection.remoteAddress]!=undefined && 
+					ipLimit.post[req.connection.remoteAddress]>options.postPerMinute
+				)return res.end('spam');
+				if(
+					options.csrfProtection && 
+					(
+						req.headers.cookie===undefined ||
+						!req.headers.cookie.includes('csrfProtectionToken=true')
+					)
+				)res.end('please visit the page first');
+				console.log(req.headers.cookie);
 				ipLimit.post[req.connection.remoteAddress]= (ipLimit.post[req.connection.remoteAddress] || 0)+1;
-				const timer=setTimeout(()=>{res.end('');console.log('killed')}, options.postTime);
+				const timer=setTimeout(()=>res.end(''), options.postTime);
 				let totalData = '';
 				req.on('data', chunk=>totalData+=chunk);
-				req.on('end', ()=>{clearTimeout(timer);post(totalData, req, res)});
+				req.on('end', ()=>{clearTimeout(timer);options.postHandler(totalData, req, res)});
 			}
 			else
 			{
@@ -357,5 +370,5 @@ function startServer(ops={}, post=()=>{})
 		1000*10
 	)
 }
-startServer(ops, post);
+startServer(ops);
 //#endregion
