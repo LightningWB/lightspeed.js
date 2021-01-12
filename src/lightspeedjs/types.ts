@@ -141,5 +141,4 @@ export type pages =
 	asyncReturnFunctions:internalFunction[],
 }
 
-// ignore these errors as this code doesn't run
-export function startServer(ops: startUpOptions = {}): serverAccess;
+export declare function startServer(ops: startUpOptions): serverAccess;
