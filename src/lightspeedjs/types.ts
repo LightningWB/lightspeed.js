@@ -5,11 +5,11 @@ export type startUpOptions =
 	/**
 	 * the certificate if you are using https
 	 */
-	cert?:'',
+	cert?:'' | String,
 	/**
 	 * keep this at true unless you know what you are doing
 	 */
-	csrfProtection?:true,
+	csrfProtection?:true | Boolean,
 	/**
 	 * functions to be executed by visiting pages
 	 */
@@ -17,23 +17,23 @@ export type startUpOptions =
 	/**
 	 * amount of get requests per minute per ip
 	 */
-	getPerMinute?:1000,
+	getPerMinute?:1000 | Number,
 	/**
 	 * Allow iframes
 	 */
-	iframe?:false,
+	iframe?:false | Boolean,
 	/**
 	 * Include jQuery or not
 	 */
-	jQuery?:false,
+	jQuery?:false | Boolean,
 	/**
 	 * the key if you are using https
 	 */
-	key?:'',
+	key?:'' | String,
 	/**
 	 * The directory with site pages
 	 */
-	pagesLocation?:'/site',
+	pagesLocation?:'/site' | String,
 	/**
 	 * The port the server will listen on.
 	 * 
@@ -41,7 +41,7 @@ export type startUpOptions =
 	 * 
 	 * http uses 80 and https uses 443
 	 */
-	port?:80,
+	port?:80 | Number,
 	/**
 	 * The function to handle post requests
 	 */
@@ -49,59 +49,59 @@ export type startUpOptions =
 	/**
 	 * amount of post requests per minute per ip
 	 */
-	postPerMinute?:10,
+	postPerMinute?:10 | Number,
 	/**
 	 * The amount of time in milliseconds before a post request is closed
 	 */
-	postTime?:15000,
+	postTime?:15000 | Number,
 	/**
 	 * If this is true someone can just make 404 requests and spam the console
 	 */
-	printErrors?:true,
+	printErrors?:true | Boolean,
 	/**
 	 * the protocol to be used
 	 * 
 	 * defaults to http
 	 */
-	protocol?:'http'|'https',
+	protocol?:'http'|'https' | String,
 	/**
 	 * Functions that are able to return js
 	 */
-	returnFunctions?:{},
+	returnFunctions?:{} | Object,
 	/**
 	 * If a rest API should be set up
 	 */
-	restApi?:false,
+	restApi?:false | Boolean,
 	/**
 	 * The default file extension for the rest api
 	 */
-	restFileExtension?:'json',
+	restFileExtension?:'json' | String,
 	/**
 	 * Path to json files
 	 */
-	restLocation?:'/rest',
+	restLocation?:'/rest' | String,
 	/**
 	 * The url prefix to interact with the api.
 	 */
-	restPrefix?:'/rest',
+	restPrefix?:'/rest' | String,
 	/**
 	 * Serve files from the disk or memory
 	 */
-	staticPage?:true,
+	staticPage?:true | Boolean,
 	/**
 	 * File extension to be sued for template files
 	 */
-	templateFileExtension?:'template',
+	templateFileExtension?:'template' | String,
 	/**
 	 * Path to template files
 	 */
-	templateLocation?:'/templates',
+	templateLocation?:'/templates' | String,
 	/**
 	 * The variables accessible to the internal variable commands
 	 * 
 	 * You can edit this object while running to change variables
 	 */
-	variables?:{},
+	variables?:{} | Object,
 }
 
 export type internalFunction = (req: http.ClientRequest, queries:url.UrlWithParsedQuery)=>any;
