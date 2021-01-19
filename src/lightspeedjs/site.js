@@ -325,7 +325,6 @@ function startServer(ops={})
 						!req.headers.cookie.includes('csrfProtectionToken=true')
 					)
 				)res.end('please visit the page first');
-				console.log(req.headers.cookie);
 				ipLimit.post[req.connection.remoteAddress]= (ipLimit.post[req.connection.remoteAddress] || 0)+1;
 				const timer=setTimeout(()=>res.end(''), options.postTime);
 				let totalData = '';
