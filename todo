@@ -28,6 +28,7 @@
 	- name it @done
 	- examples and make documentation site for it
 	- github stuff @done
-	- make it not run in a vm but have it all be scoped in a function
+	- make it not run in a vm but have it all be scoped in a function @done
+	- html encoding @done
 	- vscode extension @done please add highliting if you know how to
 	- package it up and release to npm

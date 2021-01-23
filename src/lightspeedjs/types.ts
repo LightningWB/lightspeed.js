@@ -1,4 +1,4 @@
-import * as http from "http";
+import * as http from "http";// I bet http and https are close enough for this not to matter
 import * as url from "url";
 export type startUpOptions =
 {
@@ -45,7 +45,7 @@ export type startUpOptions =
 	/**
 	 * The function to handle post requests
 	 */
-	postHandler?:(data: any, req: http.IncomingMessage, res: http.ServerResponse)=>any,
+	postHandler?:(data: any, req: http.IncomingMessage, res: http.OutgoingMessage)=>any,
 	/**
 	 * amount of post requests per minute per ip
 	 */

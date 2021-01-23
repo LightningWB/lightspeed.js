@@ -1,4 +1,4 @@
-const siteFrame = require('../src/lightspeedjs')
+const lightspeed = require('../src/lightspeedjs')
 const fs = require('fs');
 const path = require('path');
 const pageVars = 
@@ -19,7 +19,7 @@ const pageVars =
 	key:fs.readFileSync(__dirname+'/key.pem', 'utf-8')
 }, (data, req, res)=>{console.log(data);res.end('ok')});*/
 
-siteFrame.startServer({
+lightspeed({
 	port:80,
 	staticPage:true,
 	pagesLocation:'./pages',
