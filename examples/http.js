@@ -41,7 +41,17 @@ lightspeed({
 	},
 	postHandler:(data, req, res)=>{console.log(data);res.end('ok')},
 	jQuery:false,
-	variables:pageVars
+	variables:pageVars,
+	globalText:{
+		beginning:'beginning',
+		end:'end'
+	},
+	fileTypeText:{
+		html:{
+			beginning:'beginning html',
+			end:'end html'
+		}
+	}
 });
 
 setInterval(

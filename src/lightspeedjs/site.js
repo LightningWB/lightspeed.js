@@ -43,6 +43,7 @@ function buildServer()
 	};
 	/**
 	 * Options
+	 * @type {import('./types').startUpOptions}
 	 */
 	const options =
 	{
@@ -70,6 +71,12 @@ function buildServer()
 		variables:{},
 		returnFunctions:{},
 		csrfProtection:true,
+		globalText:
+		{
+			beginning:'',
+			end:''
+		},
+		fileTypeText:{}
 	}
 	/**
 	 * Gets a list of files in a giver directory
@@ -181,15 +188,22 @@ function buildServer()
 
 	/**
 	 * send the page and perform and needed operations to the page
+	 * @param {import('http').ClientRequest} req
 	 * @param {import('http').ServerResponse} res 
 	 * @param {import('./types').pages} page 
 	 * @param {url.UrlWithParsedQuery} urlData
 	 * @param {Boolean} fromRest
+	 * @param {String} fileType
 	 */
-	async function sendPage(req, res, page, urlData, fromRest=false)
+	async function sendPage(req, res, page, urlData, fromRest=false, fileType)
 	{
 		let pageNew = page.page;
 		if(options.jQuery && !fromRest)pageNew+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
+		if(options.fileTypeText[fileType]!=undefined)
+		{
+			if(options.fileTypeText[fileType].beginning!=undefined)pageNew = options.fileTypeText[fileType].beginning + pageNew;
+			if(options.fileTypeText[fileType].end!=undefined)pageNew = pageNew + options.fileTypeText[fileType].end;
+		}
 		callFuncs(page.beforeFunctions, urlData.query, req);
 		try// variables
 		{
@@ -228,7 +242,7 @@ function buildServer()
 			if(options.printErrors)console.log('Error in variable writing', err);
 		}
 		callFuncs(page.afterFunctions, urlData.query, req);
-		res.end(pageNew);
+		res.end(options.globalText.beginning + pageNew + options.globalText.end);
 	}
 
 	/**
@@ -240,20 +254,28 @@ function buildServer()
 	{
 		const urlData = url.parse(req.url, true);
 		const splitUp = urlData.pathname.split('.');
-		const fileType = splitUp.length===1?undefined:splitUp[splitUp.length-1];// it uses undefined later on to add .html if it has no extension
+		let fileType = splitUp.length===1?undefined:splitUp[splitUp.length-1];// it uses undefined later on to add .html if it has no extension
 		if(!options.iframe)res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 		if(options.csrfProtection)res.setHeader('set-cookie', 'csrfProtectionToken=true; Max-Age=86400; HttpOnly; SameSite=Strict');// a cookie with a max age of a day
 		if(options.restApi && urlData.pathname.indexOf(options.restPrefix+'/')==0)// rest api
 		{
-			if(urlData.pathname[urlData.pathname.length-1]==='/')urlData.pathname+='index.'+options.restFileExtension;
-			else if(fileType===undefined)urlData.pathname+='.'+options.restFileExtension;
+			if(urlData.pathname[urlData.pathname.length-1]==='/')
+			{
+				fileType='json';
+				urlData.pathname+='index.'+options.restFileExtension;
+			}
+			else if(fileType===undefined)
+			{
+				fileType='json';
+				urlData.pathname+='.'+options.restFileExtension;
+			}
 			res.writeHead(200, {'Content-Type':'text/json'});
 			if(restData[urlData.pathname.replace(options.restPrefix, '')]!=undefined || !options.staticPage)
 			{
 				if(options.staticPage)
 				{
 					//callFuncs(restData[urlData.pathname.replace(options.restPrefix, '')].functions, req)
-					return sendPage(req, res, restData[urlData.pathname.replace(options.restPrefix, '')], urlData, true);
+					return sendPage(req, res, restData[urlData.pathname.replace(options.restPrefix, '')], urlData, true, fileType);
 				}
 				else
 				{
@@ -265,7 +287,7 @@ function buildServer()
 						{
 							//callFuncs(data.functions)
 							//res.end(data.page);
-							sendPage(req, res, data, urlData, true);
+							sendPage(req, res, data, urlData, true, fileType);
 						},
 						err=>
 						{
@@ -289,14 +311,18 @@ function buildServer()
 			else if(fileType==='jpg')res.writeHead(200,{'Content-Type':'img/jpg'});
 			else if(fileType==='html'||fileType===undefined)res.writeHead(200,{'Content-Type':'text/html'});   
 			if(urlData.pathname[urlData.pathname.length-1]==='/')urlData.pathname+='index.html';// an example would be https:example.example/about/ would redirect to about/index.html
-			else if(fileType===undefined)urlData.pathname+='.html';// if there is no file extension and it doesnt end in /
+			else if(fileType===undefined)
+			{
+				fileType='html';
+				urlData.pathname+='.html';
+			}// if there is no file extension and it doesnt end in /
 			// ^ an example of this is https:example.example/about would redirect to about.html
 			// static page is found or reading from files
 			if(pages[urlData.pathname]!=undefined||!options.staticPage)
 			{
 				if(options.staticPage)
 				{
-					return sendPage(req, res, pages[urlData.pathname], urlData, false);
+					return sendPage(req, res, pages[urlData.pathname], urlData, false, fileType);
 				}
 				else
 				{
@@ -307,7 +333,7 @@ function buildServer()
 						path.join(__dirname, options.pagesLocation),
 						(data)=>
 						{
-							sendPage(req, res, data, urlData, false)
+							sendPage(req, res, data, urlData, false, fileType)
 						},
 						(err)=>
 						{
