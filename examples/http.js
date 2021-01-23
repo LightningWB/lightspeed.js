@@ -19,6 +19,13 @@ const pageVars =
 	key:fs.readFileSync(__dirname+'/key.pem', 'utf-8')
 }, (data, req, res)=>{console.log(data);res.end('ok')});*/
 
+function post(m, data, req, res)
+{
+	res.end(m);
+	console.log(data);
+	console.log('post request', m);
+}
+
 lightspeed({
 	port:80,
 	staticPage:true,
@@ -40,6 +47,16 @@ lightspeed({
 		}
 	},
 	postHandler:(data, req, res)=>{console.log(data);res.end('ok')},
+	posts:
+	{
+		'post':(data, req, res)=>post('/post', data, req, res),
+		'post2':(data, req, res)=>post('/post2', data, req, res),
+		'api':
+		{
+			'post':(data, req, res)=>post('/api/post', data, req, res),
+			'post2':(data, req, res)=>post('/api/post2', data, req, res),
+		}
+	},
 	jQuery:false,
 	variables:pageVars,
 	globalText:{

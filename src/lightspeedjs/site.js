@@ -76,8 +76,55 @@ function buildServer()
 			beginning:'',
 			end:''
 		},
-		fileTypeText:{}
+		fileTypeText:{},
+		posts:{}
 	}
+
+	let postFunctions = {};
+
+	/**
+	 * loads the post tree recursively
+	 * @param {import('./types').postRequests} posts 
+	 */
+	function loadPosts(posts)
+	{
+		const compiledPosts = {};
+		for(let url in posts)
+		{
+			const oldUrl = url;
+			if(url.length>0 && url[0]!='/')url = '/'+url;// ads a / if it is a start because you need to do /something
+			if(typeof posts[oldUrl]==='object')
+			{
+				const functions = loadPosts(posts[oldUrl]);
+				for(let func in functions)
+				{
+					if(func.length>0 && func[0]!='/' && oldUrl.charAt(oldUrl.length-1)!='/')func='/'+func;// check if a / needs to be added before to split paths
+					compiledPosts[url+func]=functions[func];
+				}
+			}
+			else if(typeof posts[oldUrl]==='function')
+			{
+				compiledPosts[url]=posts[oldUrl];
+			}
+		}
+		return compiledPosts;
+	}
+
+	/**
+	 * @param {any} data 
+	 * @param {import('http').IncomingMessage} req 
+	 * @param {import('http').ServerResponse} res 
+	 */
+	function callPost(data, req, res)
+	{
+		if( postFunctions[req.url] != undefined )
+		{
+			postFunctions[req.url](data, req, res);
+			if(res.writable)res.end('');
+		}
+		else options.postHandler(data, req, res);
+	}
+
 	/**
 	 * Gets a list of files in a giver directory
 	 * @param {String} dirPath pat to directory to scan
@@ -389,12 +436,16 @@ function buildServer()
 							req.headers.cookie===undefined ||
 							!req.headers.cookie.includes('csrfProtectionToken=true')
 						)
-					)res.end('please visit the page first');
+					){
+						res.statusCode = 400;
+						res.statusMessage = 'no csrf cookie';
+						res.end('please visit the page first');
+					}
 					ipLimit.post[req.connection.remoteAddress]= (ipLimit.post[req.connection.remoteAddress] || 0)+1;
 					const timer=setTimeout(()=>res.end(''), options.postTime);
 					let totalData = '';
 					req.on('data', chunk=>totalData+=chunk);
-					req.on('end', ()=>{clearTimeout(timer);options.postHandler(totalData, req, res)});
+					req.on('end', ()=>{clearTimeout(timer);callPost(totalData, req, res)});
 				}
 				else
 				{
@@ -419,6 +470,7 @@ function buildServer()
 		}
 		if(options.staticPage)setPages(pages);
 		if(options.staticPage && options.restApi)setRest();
+		postFunctions = loadPosts(options.posts);
 		let server;
 		if(options.protocol==='http'){server = http.createServer(handleRequest);}
 		else if(options.protocol==='https'){server = http.createServer({key:options.key, cert:options.cert}, handleRequest);}

@@ -38,6 +38,12 @@ namespace lightspeed
 		returnFunctions:internalFunction[],
 		asyncReturnFunctions:internalFunction[],
 	}
+	type textReplace =
+	{
+		beginning:String,
+		end:String
+	}
+	export type postRequests = postCB | {postRequests};
 	/**
 	 * Options to start the server
 	 */
@@ -53,21 +59,8 @@ namespace lightspeed
 		csrfProtection?:true | Boolean,
 		/**
 		 * text to be added based on file extensions
-		 * 
-		 * example:
-		 * 
-		 * ```ts
-		 * fileTypeText:
-		 * {
-		 *     html:
-		 *     {
-		 *         beginning:'',
-		 *         end:''
-		 *     }
-		 * }
-		 * ```
 		 */
-		fileTypeText?:{},
+		fileTypeText?:{textReplace},
 		/**
 		 * functions to be executed by visiting pages
 		 */
@@ -109,9 +102,25 @@ namespace lightspeed
 		 */
 		port?:80 | Number,
 		/**
-		 * The function to handle post requests
+		 * The function to handle post requests if no function is found in posts
 		 */
 		postHandler?:(data: any, req: http.IncomingMessage, res: http.OutgoingMessage)=>any,
+		/**
+		 * Handles post requests
+		 * 
+		 * ```js
+			{
+				'/login':login,
+				'/signup':signup,
+				'/api':
+				{
+					'/onlineNow':onlineNow,
+					'/sendMessage':sendMessage
+				}
+			}
+		```
+		 */
+		posts:{postRequests}
 		/**
 		 * amount of post requests per minute per ip
 		 */
