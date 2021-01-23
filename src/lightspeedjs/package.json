@@ -1,6 +1,9 @@
 {
-	"name": "fast-site",
-	"author": {"name": "LightningWB"},
+	"name": "lightspeedjs",
+	"repository": "https://github.com/LightningWB/lightspeed.js",
+	"author": {
+		"name": "LightningWB"
+	},
 	"version": "1.0.0",
 	"main": "index.js",
 	"license": "MIT",

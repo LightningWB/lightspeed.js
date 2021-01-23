@@ -45,7 +45,7 @@ export type startUpOptions =
 	/**
 	 * The function to handle post requests
 	 */
-	postHandler?:(data: any, req: http.ClientRequest, res: http.ServerResponse)=>any,
+	postHandler?:(data: any, req: http.IncomingMessage, res: http.ServerResponse)=>any,
 	/**
 	 * amount of post requests per minute per ip
 	 */
