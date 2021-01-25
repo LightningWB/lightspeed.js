@@ -19,6 +19,12 @@ type postCB = (data: any, req: http.ClientRequest, res: http.ServerResponse)=>an
 
 type internalFunction = (req: http.ClientRequest, queries:url.UrlWithParsedQuery)=>any;
 
+type textReplace =
+{
+	beginning:String,
+	end:String
+}
+
 namespace lightspeed
 {
 	/**
@@ -38,11 +44,6 @@ namespace lightspeed
 		returnFunctions:internalFunction[],
 		asyncReturnFunctions:internalFunction[],
 	}
-	type textReplace =
-	{
-		beginning:String,
-		end:String
-	}
 	export type postRequests = postCB | {postRequests};
 	/**
 	 * Options to start the server
@@ -60,11 +61,11 @@ namespace lightspeed
 		/**
 		 * text to be added based on file extensions
 		 */
-		fileTypeText?:{textReplace},
+		fileTypeText?:{[key:string]:textReplace},
 		/**
 		 * functions to be executed by visiting pages
 		 */
-		functions?:{internalFunction},
+		functions?:{[key:string]:internalFunction},
 		/**
 		 * amount of get requests per minute per ip
 		 */
@@ -120,7 +121,7 @@ namespace lightspeed
 			}
 		```
 		 */
-		posts?:{postRequests}
+		posts?:{[key:string]:postRequests}
 		/**
 		 * amount of post requests per minute per ip
 		 */
