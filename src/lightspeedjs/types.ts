@@ -120,7 +120,7 @@ namespace lightspeed
 			}
 		```
 		 */
-		posts:{postRequests}
+		posts?:{postRequests}
 		/**
 		 * amount of post requests per minute per ip
 		 */
