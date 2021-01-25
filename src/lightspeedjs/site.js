@@ -299,7 +299,7 @@ function buildServer()
 	 */
 	function handleReq(req, res)
 	{
-		const urlData = url.parse(req.url, true);
+		const urlData = url.parse(decodeURIComponent(req.url), true);
 		const splitUp = urlData.pathname.split('.');
 		let fileType = splitUp.length===1?undefined:splitUp[splitUp.length-1];// it uses undefined later on to add .html if it has no extension
 		if(!options.iframe)res.setHeader('X-Frame-Options', 'SAMEORIGIN');
