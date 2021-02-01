@@ -15,9 +15,9 @@ type serverAccess =
 	server:http.Server,
 }
 
-type postCB = (data: any, req: http.ClientRequest, res: http.ServerResponse)=>any;
+type postCB = (data: any, req: http.IncomingMessage, res: http.OutgoingMessage)=>any;
 
-type internalFunction = (req: http.ClientRequest, queries:url.UrlWithParsedQuery)=>any;
+type internalFunction = (req: http.IncomingMessage, queries:any)=>any;
 
 type textReplace =
 {
@@ -31,7 +31,12 @@ namespace lightspeed
 	 * Encodes all characters that generally lead to xss
 	 * @param html 
 	 */
-	export declare function htmlEscape(html:String): String;
+	export declare function htmlEscape(html:string): string;
+	/**
+	 * Generates a random string for a given length
+	 * @param length 
+	 */
+	export declare function randomString(length:number): string;
 	/**
 	 * A page with other data
 	 */
@@ -143,7 +148,7 @@ namespace lightspeed
 		/**
 		 * Functions that are able to return js
 		 */
-		returnFunctions?:{} | Object,
+		returnFunctions?:{[key:string]:internalFunction},
 		/**
 		 * If a rest API should be set up
 		 */

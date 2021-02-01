@@ -63,7 +63,7 @@ function buildServer()
 		getPerMinute:1000,
 		postPerMinute:10,
 		functions:[],
-		postHandler:()=>{},
+		postHandler:(data, req, res)=>{if(options.printErrors)console.log('Error 404 on post', req.url)},// let them know a 404 post request was made
 		templateLocation:'/templates',
 		templateFileExtension:'template',
 		__dirname:__dirname,
@@ -115,11 +115,11 @@ function buildServer()
 	 * @param {import('http').IncomingMessage} req 
 	 * @param {import('http').ServerResponse} res 
 	 */
-	function callPost(data, req, res)
+	async function callPost(data, req, res)
 	{
 		if( postFunctions[req.url] != undefined )
 		{
-			postFunctions[req.url](data, req, res);
+			await postFunctions[req.url](data, req, res);
 			if(res.writable)res.end('');
 		}
 		else options.postHandler(data, req, res);
@@ -269,7 +269,7 @@ function buildServer()
 			for(let func of page.returnFunctions)
 			{
 				const regEx = new RegExp(func.key, 'g')
-				pageNew = pageNew.replace(regEx, options.returnFunctions[func.name]());
+				pageNew = pageNew.replace(regEx, options.returnFunctions[func.name](req, urlData.query));
 			}
 		}
 		catch(err)
@@ -281,7 +281,7 @@ function buildServer()
 			for(let func of page.asyncReturnFunctions)
 			{
 				const regEx = new RegExp(func.key, 'g')
-				pageNew = pageNew.replace(regEx, await options.returnFunctions[func.name]());
+				pageNew = pageNew.replace(regEx, await options.returnFunctions[func.name](req, urlData.query));
 			}
 		}
 		catch(err)
