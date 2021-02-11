@@ -19,6 +19,8 @@ type postCB = (data: any, req: http.IncomingMessage, res: http.OutgoingMessage)=
 
 type internalFunction = (req: http.IncomingMessage, queries:any)=>any;
 
+type loggingFunction = (message:string)=>any;
+
 type textReplace =
 {
 	beginning:String,
@@ -95,6 +97,12 @@ namespace lightspeed
 		 * the key if you are using https
 		 */
 		key?:'' | String,
+		/**
+		 * a logging function iun common log format
+		 * 
+		 * defaults to console.log
+		 */
+		log?:loggingFunction,
 		/**
 		 * The directory with site pages
 		 */

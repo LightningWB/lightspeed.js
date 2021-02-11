@@ -77,7 +77,8 @@ function buildServer()
 			end:''
 		},
 		fileTypeText:{},
-		posts:{}
+		posts:{},
+		log:console.log
 	}
 
 	let postFunctions = {};
@@ -123,6 +124,7 @@ function buildServer()
 			if(res.writable)res.end('');
 		}
 		else options.postHandler(data, req, res);
+		log(req, res);
 	}
 
 	/**
@@ -213,7 +215,11 @@ function buildServer()
 	 * @param {import('http').ServerResponse} res 
 	 * @param {String} location location to be redirected to
 	 */
-	const redirect = (res, location)=>res.end('<!DOCTYPE html><html><head><title>Redirecting</title></head><body>Redirecting...</body><script>window.location=window.location.origin+"'+location+'"</script></html>');
+	const redirect = (res, location, req)=>
+	{
+		res.end('<!DOCTYPE html><html><head><title>Redirecting</title></head><body>Redirecting...</body><script>window.location=window.location.origin+"'+location+'"</script></html>');
+		log(req, res);
+	}
 
 	/**
 	 * calls a bunch of functions and includes error handling
@@ -290,6 +296,7 @@ function buildServer()
 		}
 		callFuncs(page.afterFunctions, urlData.query, req);
 		res.end(options.globalText.beginning + pageNew + options.globalText.end);
+		log(req, res);
 	}
 
 	/**
@@ -339,6 +346,7 @@ function buildServer()
 						err=>
 						{
 							if(options.printErrors)console.log('Error 404 on rest: ', urlData.pathname);
+							res.statusCode=404;
 							return res.end('{"fail":true,"reason":"404"}');
 						}
 					)
@@ -347,6 +355,7 @@ function buildServer()
 			else
 			{
 				if(options.printErrors)console.log('Error 404 on rest: ', urlData.pathname);
+				res.statusCode=404;
 				return res.end('{"fail":true,"reason":"404"}');
 			}
 		}
@@ -385,7 +394,8 @@ function buildServer()
 						(err)=>
 						{
 							if(options.printErrors)console.log('Error 404: ', urlData.pathname);
-							return redirect(res, '/404.html');
+							res.statusCode=404;
+							return redirect(res, '/404.html', req);
 						}
 					)
 					/*fs.readFile(
@@ -409,9 +419,35 @@ function buildServer()
 			else
 			{
 				if(options.printErrors)console.log('Error 404: ', urlData.path);
-				return redirect(res, '/404.html');
+				res.statusCode=404;
+				return redirect(res, '/404.html', req);
 			}
 		}
+	}
+	/**
+	 * uses common log format to access options.log and format stuff
+	 * @param {import('http').ClientRequest} req 
+	 * @param {import('http').ServerResponse} res
+	 */
+	function log(req, res)
+	{
+		options.log(
+			req.socket.remoteAddress+
+			' '+
+			'- '+
+			'- ['+
+			new Date().toUTCString()+
+			'] "'+
+			req.method+
+			' '+
+			req.url+
+			' '+
+			req.httpVersion+
+			'" '+
+			res.statusCode+
+			' '+
+			res.socket.bytesWritten
+		);
 	}
 	function startServer(ops={})
 	{
@@ -445,7 +481,10 @@ function buildServer()
 					const timer=setTimeout(()=>res.end(''), options.postTime);
 					let totalData = '';
 					req.on('data', chunk=>totalData+=chunk);
-					req.on('end', ()=>{clearTimeout(timer);callPost(totalData, req, res)});
+					req.on('end', ()=>{
+						clearTimeout(timer);
+						callPost(totalData, req, res);
+					});
 				}
 				else
 				{
@@ -491,7 +530,6 @@ function buildServer()
 /**
  * Starts and returns a http server.
  * @param {import('./types').startUpOptions} ops options for the server.
- * @returns {import('./types').S}
  */
 function startServer(ops={})
 {
