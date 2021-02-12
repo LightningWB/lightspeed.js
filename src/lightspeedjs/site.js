@@ -251,7 +251,7 @@ function buildServer()
 	async function sendPage(req, res, page, urlData, fromRest=false, fileType)
 	{
 		let pageNew = page.page;
-		if(options.jQuery && !fromRest)pageNew+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
+		if(options.jQuery && !fromRest && fileType==='html')pageNew+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
 		if(options.fileTypeText[fileType]!=undefined)
 		{
 			if(options.fileTypeText[fileType].beginning!=undefined)pageNew = options.fileTypeText[fileType].beginning + pageNew;
@@ -295,7 +295,13 @@ function buildServer()
 			if(options.printErrors)console.log('Error in variable writing', err);
 		}
 		callFuncs(page.afterFunctions, urlData.query, req);
-		res.end(options.globalText.beginning + pageNew + options.globalText.end);
+		if(
+			options.globalText.beginning!='' &&
+			options.globalText.end!=''
+		)res.end(options.globalText.beginning + pageNew + options.globalText.end);
+		else{
+			res.end(pageNew);
+		}
 		log(req, res);
 	}
 

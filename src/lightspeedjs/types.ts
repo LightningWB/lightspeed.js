@@ -79,6 +79,8 @@ namespace lightspeed
 		getPerMinute?:1000 | Number,
 		/**
 		 * text to be added to every page
+		 * 
+		 * this can mess with binary files so try to use file type text
 		 */
 		globalText?:
 		{

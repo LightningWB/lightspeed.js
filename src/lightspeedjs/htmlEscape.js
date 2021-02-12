@@ -3,7 +3,8 @@ const chars = {
 	'<': '&lt;',
 	'>': '&gt;',
 	'\'': '&#39;',
-	'"': '&quot;'
+	'"': '&quot;',
+	'/': '&#x2F;'
 }
 /**
  * Html encodes characters that may result in xss
@@ -11,5 +12,5 @@ const chars = {
  */
 module.exports=function htmlEscape(html)
 {
-	return html.replace( /[&<>'"]/g, char => chars[char] );
+	return html.replace( /[&<>'"/]/g, char => chars[char] );
 }
