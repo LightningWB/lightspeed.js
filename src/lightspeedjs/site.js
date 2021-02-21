@@ -71,11 +71,6 @@ function buildServer()
 		variables:{},
 		returnFunctions:{},
 		csrfProtection:true,
-		globalText:
-		{
-			beginning:'',
-			end:''
-		},
 		fileTypeText:{},
 		posts:{},
 		log:console.log
@@ -295,16 +290,45 @@ function buildServer()
 			if(options.printErrors)console.log('Error in variable writing', err);
 		}
 		callFuncs(page.afterFunctions, urlData.query, req);
-		if(
-			options.globalText.beginning!='' &&
-			options.globalText.end!=''
-		)res.end(options.globalText.beginning + pageNew + options.globalText.end);
-		else{
-			res.end(pageNew);
-		}
+		res.end(pageNew);
 		log(req, res);
 	}
 
+	/**
+	 * gives a 404 response to a request
+	 * @param {import('http').IncomingMessage} req 
+	 * @param {import('http').ServerResponse} res 
+	 * @param {boolean} redirectUser request or not on page request
+	 * @param {boolean} rest if the request came from the rest api or not
+	 */
+	function give404(req, res, redirectUser=true, rest=false)
+	{
+		res.statusCode=404;
+		if(rest)
+		{
+			if(options.printErrors)
+			{
+				console.log('Error 404 on rest: ', req.url);
+			}
+			res.end('{"fail":true,"reason":"404"}');
+		}
+		else
+		{
+			if(options.printErrors)
+			{
+				console.log('Error 404: ', req.url);
+			}
+			if(redirectUser)
+			{
+				redirect(res, '/404.html', req);
+			}
+			else
+			{
+				// if no 404 page is found on static pages then there won't be any functions or page variables so bypassing serve page is ok
+				res.end(pages['/404.html'].page);
+			}
+		}
+	}
 	/**
 	 * 
 	 * @param {import('http').ClientRequest} req 
@@ -329,7 +353,7 @@ function buildServer()
 				fileType='json';
 				urlData.pathname+='.'+options.restFileExtension;
 			}
-			res.writeHead(200, {'Content-Type':'text/json'});
+			if(fileType==='json')res.setHeader('Content-Type', 'text/json');
 			if(restData[urlData.pathname.replace(options.restPrefix, '')]!=undefined || !options.staticPage)
 			{
 				if(options.staticPage)
@@ -351,18 +375,14 @@ function buildServer()
 						},
 						err=>
 						{
-							if(options.printErrors)console.log('Error 404 on rest: ', urlData.pathname);
-							res.statusCode=404;
-							return res.end('{"fail":true,"reason":"404"}');
+							give404(req, res, false, true);
 						}
 					)
 				}
 			}
 			else
 			{
-				if(options.printErrors)console.log('Error 404 on rest: ', urlData.pathname);
-				res.statusCode=404;
-				return res.end('{"fail":true,"reason":"404"}');
+				give404(req, res, false, true);
 			}
 		}
 		else// any other page
@@ -399,9 +419,7 @@ function buildServer()
 						},
 						(err)=>
 						{
-							if(options.printErrors)console.log('Error 404: ', urlData.pathname);
-							res.statusCode=404;
-							return redirect(res, '/404.html', req);
+							give404(req, res, false, false);
 						}
 					)
 					/*fs.readFile(
@@ -424,9 +442,8 @@ function buildServer()
 			// no page found on static pages
 			else
 			{
-				if(options.printErrors)console.log('Error 404: ', urlData.path);
-				res.statusCode=404;
-				return redirect(res, '/404.html', req);
+				// on static pages a 404 page is saved by default
+				give404(req, res, true, false);
 			}
 		}
 	}

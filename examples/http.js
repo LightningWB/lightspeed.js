@@ -59,10 +59,6 @@ lightspeed({
 	},
 	jQuery:false,
 	variables:pageVars,
-	globalText:{
-		beginning:'beginning',
-		end:'end'
-	},
 	fileTypeText:{
 		html:{
 			beginning:'beginning html',
