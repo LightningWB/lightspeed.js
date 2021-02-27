@@ -36,5 +36,5 @@
 		- modify options @done
 		- modify incoming request/outgoing result @done
 		- documentation
-	- add a way to add custom text to every page
+	- add a way to add custom text to every page @done
 	- package it up and release to npm
