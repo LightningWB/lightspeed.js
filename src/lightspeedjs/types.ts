@@ -204,5 +204,5 @@ namespace lightspeed
 /**
  * starts the server
  */
-declare function lightspeed(ops: lightspeed.startUpOptions): serverAccess;
+declare function lightspeed(ops: lightspeed.startUpOptions | void): serverAccess;
 export = lightspeed
