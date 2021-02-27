@@ -116,13 +116,13 @@ namespace lightspeed
 		 * 
 		 * ```js
 			{
-				'/login':login,
-				'/signup':signup,
-				'/api':
-				{
-					'/onlineNow':onlineNow,
-					'/sendMessage':sendMessage
-				}
+			    '/login':login,
+			    '/signup':signup,
+			    '/api':
+			    {
+			        '/onlineNow':onlineNow,
+			        '/sendMessage':sendMessage
+			    }
 			}
 		```
 		 */
