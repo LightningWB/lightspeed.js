@@ -31,5 +31,9 @@
 	- make it not run in a vm but have it all be scoped in a function @done
 	- html encoding @done
 	- vscode extension @done please add highliting if you know how to
+	- subdomain and then a way to have multiple server instances run on one port.@done
+	plugin support:
+		- modify options
+		- modify incoming request/outgoing result
 	- add a way to add custom text to every page
 	- package it up and release to npm

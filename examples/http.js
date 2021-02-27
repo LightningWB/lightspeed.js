@@ -26,7 +26,7 @@ function post(m, data, req, res)
 	console.log('post request', m);
 }
 
-lightspeed({
+const server = lightspeed({
 	port:80,
 	staticPage:true,
 	pagesLocation:'./pages',
@@ -64,6 +64,11 @@ lightspeed({
 			beginning:'beginning html',
 			end:'end html'
 		}
+	},
+	start:true,
+	subDomains:
+	{
+		'sub':lightspeed({pagesLocation:'./restJSON', start:false})
 	}
 });
 

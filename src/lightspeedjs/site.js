@@ -73,9 +73,10 @@ function buildServer()
 		csrfProtection:true,
 		fileTypeText:{},
 		posts:{},
-		log:console.log
+		log:console.log,
+		start:true,
 	}
-
+	// post handling stuff
 	let postFunctions = {};
 
 	/**
@@ -120,6 +121,35 @@ function buildServer()
 		}
 		else options.postHandler(data, req, res);
 		log(req, res);
+	}
+
+	// subdomain stuff
+	let subDomains = {};
+	/**
+	 * compiles subdomain tree to one object, so it is far easier to add domains
+	 * @param {any} domainTree 
+	 */
+	function compileSubs(domainTree)
+	{
+		const compiledSubs = {};
+		for(let domain in domainTree)
+		{
+			const oldDomain = domain;
+			if(typeof domainTree[oldDomain]==='object')
+			{
+				compiledSubs[domain]=domainTree[oldDomain];
+			}
+			else
+			{
+				const subs = compileSubs(domainTree[oldDomain]);
+				for(let subDomain in subs)
+				{
+					subDomain='.'+subDomain;// check if a . should be added to split up domains
+					compiledSubs[domain+subDomain]=subs[subDomain.substring(1)];
+				}
+			}
+		}
+		return compiledSubs;
 	}
 
 	/**
@@ -483,6 +513,26 @@ function buildServer()
 		{
 			try
 			{
+				let maxLength = 0, maxDomain;
+				for(const subdomain in subDomains)
+				{
+					console.log(subdomain, req.headers.host)
+					if(req.headers.host!=undefined && req.headers.host.indexOf(subdomain)===0)
+					{
+						// this stops sub from taking priority over sub1.sub if sub is lower
+						if(subdomain.length > maxLength)
+						{
+							maxDomain = subdomain;
+						}
+					}
+				}
+				console.log(maxDomain, maxLength)
+				if(maxDomain!=undefined)
+				{
+					
+					subDomains[maxDomain].server.emit('request', req, res);
+					return;
+				}
 				if(req.method==='POST')
 				{
 					if(
@@ -533,10 +583,10 @@ function buildServer()
 		if(options.staticPage)setPages(pages);
 		if(options.staticPage && options.restApi)setRest();
 		postFunctions = loadPosts(options.posts);
+		subDomains = compileSubs(options.subDomains);
 		let server;
 		if(options.protocol==='http'){server = http.createServer(handleRequest);}
 		else if(options.protocol==='https'){server = http.createServer({key:options.key, cert:options.cert}, handleRequest);}
-		server.listen(options.port);
 		setInterval
 		(
 			()=>
@@ -545,8 +595,13 @@ function buildServer()
 				ipLimit.post={};
 			},
 			1000*10
-		)
-		return {server:server, reloadFiles:reloadFiles};
+		);
+		function start()
+		{	
+			server.listen(options.port);
+		}
+		if(options.start)start();
+		return {server:server, reloadFiles:reloadFiles, start:start};
 	}
 	return startServer;
 }

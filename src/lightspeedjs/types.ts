@@ -8,11 +8,15 @@ type serverAccess =
 	/**
 	 * Reloads all the server files
 	 */
-	reloadFiles:reloadFiles
+	reloadFiles:reloadFiles,
 	/**
 	 * the server object
 	 */
 	server:http.Server,
+	/**
+	 * starts the server if it is already not started
+	 */
+	start:()=>void
 }
 
 type postCB = (data: any, req: http.IncomingMessage, res: http.OutgoingMessage)=>any;
@@ -166,9 +170,14 @@ namespace lightspeed
 		 */
 		restPrefix?:'/rest' | String,
 		/**
+		 * wether or not to start the server
+		 */
+		start?:true | boolean,
+		/**
 		 * Serve files from the disk or memory
 		 */
 		staticPage?:true | Boolean,
+		subDomains?:{[key:string]:serverAccess},
 		/**
 		 * File extension to be sued for template files
 		 */
