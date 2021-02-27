@@ -33,7 +33,8 @@
 	- vscode extension @done please add highliting if you know how to
 	- subdomain and then a way to have multiple server instances run on one port.@done
 	plugin support:
-		- modify options
-		- modify incoming request/outgoing result
+		- modify options @done
+		- modify incoming request/outgoing result @done
+		- documentation
 	- add a way to add custom text to every page
 	- package it up and release to npm

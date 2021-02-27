@@ -69,7 +69,10 @@ const server = lightspeed({
 	subDomains:
 	{
 		'sub':lightspeed({pagesLocation:'./restJSON', start:false})
-	}
+	},
+	plugins:[
+		require('./exPlugin')
+	]
 });
 
 setInterval(

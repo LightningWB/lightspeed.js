@@ -75,6 +75,7 @@ function buildServer()
 		posts:{},
 		log:console.log,
 		start:true,
+		plugins:[],
 	}
 	// post handling stuff
 	let postFunctions = {};
@@ -513,10 +514,10 @@ function buildServer()
 		{
 			try
 			{
+				// sub domains
 				let maxLength = 0, maxDomain;
 				for(const subdomain in subDomains)
 				{
-					console.log(subdomain, req.headers.host)
 					if(req.headers.host!=undefined && req.headers.host.indexOf(subdomain)===0)
 					{
 						// this stops sub from taking priority over sub1.sub if sub is lower
@@ -526,13 +527,26 @@ function buildServer()
 						}
 					}
 				}
-				console.log(maxDomain, maxLength)
 				if(maxDomain!=undefined)
 				{
 					
 					subDomains[maxDomain].server.emit('request', req, res);
 					return;
 				}
+				// then plugins
+				for(let i=0; i<options.plugins.length; i++)
+				{
+					const plugin = options.plugins[i];
+					if(plugin.modifications!=undefined)
+					{
+						if(plugin.modifications(req, res))
+						{
+							if(res.writable)res.end();
+							return;
+						}
+					}
+				}
+				// then normal stuff
 				if(req.method==='POST')
 				{
 					if(
@@ -579,6 +593,16 @@ function buildServer()
 		{
 			if(options.key==='')throw 'a key is required for https';
 			else if(options.cert==='')throw 'a certificate is required for https';
+		}
+		// a basic for loop allows plugins to add plugins as dependencies
+		for(let i=0; i<options.plugins.length; i++)
+		{
+			const plugin = options.plugins[i];
+			if(plugin.options!=undefined)
+			{
+				// it can modify options directly and doesn't have to overwrite because it is then harder to break the server then
+				plugin.options(options);
+			}
 		}
 		if(options.staticPage)setPages(pages);
 		if(options.staticPage && options.restApi)setRest();

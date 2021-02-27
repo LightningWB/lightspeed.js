@@ -31,6 +31,12 @@ type textReplace =
 	end:String
 }
 
+type plugin =
+{
+	options:(ops:lightspeed.startUpOptions)=>any,
+	modifications:(req:http.ClientRequest, res:http.ServerResponse)=>any|boolean
+}
+
 namespace lightspeed
 {
 	/**
@@ -103,6 +109,10 @@ namespace lightspeed
 		 * The directory with site pages
 		 */
 		pagesLocation?:'/site' | String,
+		/**
+		 * a list of plugins that get used starting from 0 to the last index
+		 */
+		plugins:plugin[],
 		/**
 		 * The port the server will listen on.
 		 * 
