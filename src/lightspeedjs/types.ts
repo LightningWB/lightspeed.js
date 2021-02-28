@@ -112,7 +112,7 @@ namespace lightspeed
 		/**
 		 * a list of plugins that get used starting from 0 to the last index
 		 */
-		plugins:plugin[],
+		plugins?:plugin[],
 		/**
 		 * The port the server will listen on.
 		 * 
