@@ -518,7 +518,7 @@ function buildServer()
 			try
 			{
 				// sub domains
-				let maxLength = 0, maxDomain;
+				let maxLength = -1, maxDomain;
 				for(const subdomain in subDomains)
 				{
 					if(req.headers.host!=undefined && req.headers.host.indexOf(subdomain)===0)
