@@ -19,7 +19,7 @@ type serverAccess =
 	start:()=>void
 }
 
-type postCB = (data: any, req: http.IncomingMessage, res: http.OutgoingMessage)=>any;
+type postCB = (data: any, req: http.ClientRequest, res: http.ServerResponse)=>any;
 
 type internalFunction = (req: http.IncomingMessage, queries:any)=>any;
 

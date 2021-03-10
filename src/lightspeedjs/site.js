@@ -118,9 +118,9 @@ function buildServer()
 		if( postFunctions[req.url] != undefined )
 		{
 			await postFunctions[req.url](data, req, res);
-			if(res.writable)res.end('');
 		}
 		else options.postHandler(data, req, res);
+		if(res.writable)res.end('');
 		log(req, res);
 	}
 
@@ -136,8 +136,10 @@ function buildServer()
 		for(let domain in domainTree)
 		{
 			const oldDomain = domain;
-			if(typeof domainTree[oldDomain]==='object')
-			{
+			if(
+				typeof domainTree[oldDomain] === 'object' ||
+				typeof domainTree[oldDomain] === 'function'
+			){
 				compiledSubs[domain]=domainTree[oldDomain];
 			}
 			else
@@ -334,6 +336,7 @@ function buildServer()
 	 */
 	function give404(req, res, redirectUser=true, rest=false)
 	{
+		if(!res.writable)return;
 		res.statusCode=404;
 		if(rest)
 		{
@@ -500,7 +503,7 @@ function buildServer()
 			'" '+
 			res.statusCode+
 			' '+
-			res.socket.bytesWritten
+			req.socket.bytesWritten || '-'
 		);
 	}
 	function startServer(ops={})
@@ -529,9 +532,16 @@ function buildServer()
 				}
 				if(maxDomain!=undefined)
 				{
-					
-					subDomains[maxDomain].server.emit('request', req, res);
-					return;
+					if(typeof subDomains[maxDomain] === 'object')
+					{
+						subDomains[maxDomain].server.emit('request', req, res);
+						return;
+					}
+					else if(typeof subDomains[maxDomain] === 'function')
+					{
+						subDomains[maxDomain](req, res);
+						return;
+					}
 				}
 				// then plugins
 				for(let i=0; i<options.plugins.length; i++)

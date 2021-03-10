@@ -26,6 +26,10 @@ function post(m, data, req, res)
 	console.log('post request', m);
 }
 
+const express = require('express');
+const app = express();
+app.use(express.static(path.join(__dirname, 'restJSON')));
+
 const server = lightspeed({
 	port:80,
 	staticPage:true,
@@ -68,7 +72,8 @@ const server = lightspeed({
 	start:true,
 	subDomains:
 	{
-		'sub':lightspeed({pagesLocation:'./restJSON', start:false})
+		'sub':lightspeed({pagesLocation:'./restJSON', start:false}),
+		express:app
 	},
 	plugins:[
 		require('./exPlugin')

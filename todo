@@ -37,4 +37,5 @@
 		- modify incoming request/outgoing result @done
 		- documentation
 	- add a way to add custom text to every page @done
+	- express compatability through subdomains
 	- package it up and release to npm
