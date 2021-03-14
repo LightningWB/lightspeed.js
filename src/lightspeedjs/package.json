@@ -8,5 +8,5 @@
 	"main": "index.js",
 	"license": "MIT",
 	"description": "A frame work to get a site up and running quickly",
-	"types": "types.ts"
+	"types": "index.d.ts"
 }
