@@ -38,5 +38,5 @@
 		- documentation
 	- add a way to add custom text to every page @done
 	- express compatability through subdomains @done
-	- custom page parser
+	- custom page parser compatibility @done
 	- package it up and release to npm
