@@ -279,50 +279,58 @@ function buildServer()
 	async function sendPage(req, res, page, urlData, fromRest=false, fileType)
 	{
 		let pageNew = page.page;
+		// the browser will move the script to where it belongs and it doesn't even render anything so this is fine
 		if(options.jQuery && !fromRest && fileType==='html')pageNew+='<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>';
 		if(options.fileTypeText[fileType]!=undefined)
 		{
 			if(options.fileTypeText[fileType].beginning!=undefined)pageNew = options.fileTypeText[fileType].beginning + pageNew;
 			if(options.fileTypeText[fileType].end!=undefined)pageNew = pageNew + options.fileTypeText[fileType].end;
 		}
-		callFuncs(page.beforeFunctions, urlData.query, req);
-		try// variables
+		if(options.parser!=undefined)
 		{
-			for(let variable of page.variables)
+			pageNew = await options.parser.render(pageNew, urlData);
+		}
+		else
+		{
+			callFuncs(page.beforeFunctions, urlData.query, req);
+			try// variables
 			{
-				const regEx = new RegExp(variable.key, 'g')
-				pageNew = pageNew.replace(regEx, options.variables[variable.name]);
+				for(let variable of page.variables)
+				{
+					const regEx = new RegExp(variable.key, 'g')
+					pageNew = pageNew.replace(regEx, options.variables[variable.name]);
+				}
 			}
-		}
-		catch(err)
-		{
-			if(options.printErrors)console.log('Error in variable writing', err);
-		}
-		try// return functions
-		{
-			for(let func of page.returnFunctions)
+			catch(err)
 			{
-				const regEx = new RegExp(func.key, 'g')
-				pageNew = pageNew.replace(regEx, options.returnFunctions[func.name](req, urlData.query));
+				if(options.printErrors)console.log('Error in variable writing', err);
 			}
-		}
-		catch(err)
-		{
-			if(options.printErrors)console.log('Error in variable writing', err);
-		}
-		try// return async functions
-		{
-			for(let func of page.asyncReturnFunctions)
+			try// return functions
 			{
-				const regEx = new RegExp(func.key, 'g')
-				pageNew = pageNew.replace(regEx, await options.returnFunctions[func.name](req, urlData.query));
+				for(let func of page.returnFunctions)
+				{
+					const regEx = new RegExp(func.key, 'g')
+					pageNew = pageNew.replace(regEx, options.returnFunctions[func.name](req, urlData.query));
+				}
 			}
+			catch(err)
+			{
+				if(options.printErrors)console.log('Error in variable writing', err);
+			}
+			try// return async functions
+			{
+				for(let func of page.asyncReturnFunctions)
+				{
+					const regEx = new RegExp(func.key, 'g')
+					pageNew = pageNew.replace(regEx, await options.returnFunctions[func.name](req, urlData.query));
+				}
+			}
+			catch(err)
+			{
+				if(options.printErrors)console.log('Error in variable writing', err);
+			}
+			callFuncs(page.afterFunctions, urlData.query, req);
 		}
-		catch(err)
-		{
-			if(options.printErrors)console.log('Error in variable writing', err);
-		}
-		callFuncs(page.afterFunctions, urlData.query, req);
 		res.end(pageNew);
 		log(req, res);
 	}

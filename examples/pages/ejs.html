@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>index.html</title>
+	</head>
+	<body>
+		<h1>
+			welcome to ejs testing page
+		</h1>
+		<% for(let i=0; i<10; i++){ %>
+			<p style="display: block;"><%= i %></p>
+		<% } %>
+		<% users.forEach(user => { %>
+			<div>
+				<span>name: <%= user.name %> </span>
+				<span>age: <%= user.age %> </span>
+			</div>
+		<% }) %>
+	</body>
+</html>

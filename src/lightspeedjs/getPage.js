@@ -161,7 +161,7 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 		{
 			try
 			{
-				if(err)er(err);
+				if(err)return er(err);
 				let result =
 				{
 					page:data,
@@ -171,7 +171,13 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 					returnFunctions:[],
 					asyncReturnFunctions:[],
 				};
-				if(data!=undefined && data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// only do this if it is doing special commands
+				if(options.parser!=undefined)
+				{
+					return await cb({
+							page:await options.parser.compile(data, pagePath)
+					});
+				}
+				else if(data!=undefined && data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// only do this if it is doing special commands
 				{
 					while(data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// turns out that doing a while loop and adding data to it automatically parses included files
 					{

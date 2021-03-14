@@ -37,6 +37,9 @@ type plugin =
 	modifications:(req:http.ClientRequest, res:http.ServerResponse)=>any|boolean
 }
 
+type compileFile = (file:Buffer, path:string)=>any;
+type renderFile = (file:Buffer, urlData:url.UrlWithParsedQuery)=>any;
+
 namespace lightspeed
 {
 	/**
@@ -60,7 +63,7 @@ namespace lightspeed
 		variables:variable[],
 		returnFunctions:internalFunction[],
 		asyncReturnFunctions:internalFunction[],
-	}
+	} | any
 	export type postRequests = postCB | {postRequests};
 	/**
 	 * Options to start the server
@@ -109,6 +112,22 @@ namespace lightspeed
 		 * The directory with site pages
 		 */
 		pagesLocation?:'/site' | String,
+		/**
+		 * allows a custom parser to be used in place of the custom default one
+		 */
+		parser?:{
+			/**
+			 * the function to compile a page
+			 * will pass the buffer from reading the file and nothing more
+			 */
+			compile:compileFile,
+			context:{} | object,
+			/**
+			 * the function to render the page to add variables and such
+			 * will only pass the page to it and not any special context
+			 */
+			render:renderFile
+		}
 		/**
 		 * a list of plugins that get used starting from 0 to the last index
 		 */

@@ -1,6 +1,7 @@
 const lightspeed = require('../src/lightspeedjs')
 const fs = require('fs');
 const path = require('path');
+const ejs = require('ejs');
 const pageVars = 
 {
 	test:1,
@@ -77,7 +78,16 @@ const server = lightspeed({
 	},
 	plugins:[
 		require('./exPlugin')
-	]
+	],
+	parser:{
+		compile:(file, path)=>{
+			return file;
+		},
+		render:(file, url)=>{
+			if(url.pathname.split('.')[1] != 'html')return file;
+			return ejs.render(file.toString(), {users:[{name:'Josh', age:'100'}, {name:'Jish', age:'1001'}, {name:'Jush', age:'00'}, {name:'Jash', age:'010'}]}, {});
+		}
+	}
 });
 
 setInterval(
