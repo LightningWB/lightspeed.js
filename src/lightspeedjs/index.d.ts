@@ -38,7 +38,7 @@ type plugin =
 }
 
 type compileFile = (file:Buffer, path:string)=>any;
-type renderFile = (file:Buffer, urlData:url.UrlWithParsedQuery)=>any;
+type renderFile = (file:any, urlData:url.UrlWithParsedQuery)=>any;
 
 declare namespace lightspeed
 {
@@ -61,11 +61,11 @@ declare namespace lightspeed
 		/**
 		 * the certificate if you are using https
 		 */
-		cert?:'' | String,
+		cert?:'' | string,
 		/**
 		 * keep this at true unless you know what you are doing
 		 */
-		csrfProtection?:true | Boolean,
+		csrfProtection?:true | boolean,
 		/**
 		 * text to be added based on file extensions
 		 */
@@ -77,19 +77,19 @@ declare namespace lightspeed
 		/**
 		 * amount of get requests per minute per ip
 		 */
-		getPerMinute?:1000 | Number,
+		getPerMinute?:1000 | number,
 		/**
 		 * Allow iframes
 		 */
-		iframe?:false | Boolean,
+		iframe?:false | boolean,
 		/**
 		 * Include jQuery or not
 		 */
-		jQuery?:false | Boolean,
+		jQuery?:false | boolean,
 		/**
 		 * the key if you are using https
 		 */
-		key?:'' | String,
+		key?:'' | string,
 		/**
 		 * a logging function iun common log format
 		 * 
@@ -99,7 +99,7 @@ declare namespace lightspeed
 		/**
 		 * The directory with site pages
 		 */
-		pagesLocation?:'/site' | String,
+		pagesLocation?:'/site' | string,
 		/**
 		 * allows a custom parser to be used in place of the custom default one
 		 */
@@ -127,7 +127,7 @@ declare namespace lightspeed
 		 * 
 		 * http uses 80 and https uses 443
 		 */
-		port?:80 | Number,
+		port?:80 | number,
 		/**
 		 * The function to handle post requests if no function is found in posts
 		 */
@@ -151,21 +151,21 @@ declare namespace lightspeed
 		/**
 		 * amount of post requests per minute per ip
 		 */
-		postPerMinute?:10 | Number,
+		postPerMinute?:10 | number,
 		/**
 		 * The amount of time in milliseconds before a post request is closed
 		 */
-		postTime?:15000 | Number,
+		postTime?:15000 | number,
 		/**
 		 * If this is true someone can just make 404 requests and spam the console
 		 */
-		printErrors?:true | Boolean,
+		printErrors?:true | boolean,
 		/**
 		 * the protocol to be used
 		 * 
 		 * defaults to http
 		 */
-		protocol?:'http'|'https' | String,
+		protocol?:'http'|'https' | string,
 		/**
 		 * Functions that are able to return js
 		 */
@@ -173,19 +173,19 @@ declare namespace lightspeed
 		/**
 		 * If a rest API should be set up
 		 */
-		restApi?:false | Boolean,
+		restApi?:false | boolean,
 		/**
 		 * The default file extension for the rest api
 		 */
-		restFileExtension?:'json' | String,
+		restFileExtension?:'json' | string,
 		/**
 		 * Path to json files
 		 */
-		restLocation?:'/rest' | String,
+		restLocation?:'/rest' | string,
 		/**
 		 * The url prefix to interact with the api.
 		 */
-		restPrefix?:'/rest' | String,
+		restPrefix?:'/rest' | string,
 		/**
 		 * wether or not to start the server
 		 */
@@ -193,22 +193,22 @@ declare namespace lightspeed
 		/**
 		 * Serve files from the disk or memory
 		 */
-		staticPage?:true | Boolean,
+		staticPage?:true | boolean,
 		subDomains?:{[key:string]:serverAccess},
 		/**
 		 * File extension to be sued for template files
 		 */
-		templateFileExtension?:'template' | String,
+		templateFileExtension?:'template' | string,
 		/**
 		 * Path to template files
 		 */
-		templateLocation?:'/templates' | String,
+		templateLocation?:'/templates' | string,
 		/**
 		 * The variables accessible to the internal variable commands
 		 * 
 		 * You can edit this object while running to change variables
 		 */
-		variables?:{} | Object,
+		variables?:{} | object,
 	}
 }
 /**
