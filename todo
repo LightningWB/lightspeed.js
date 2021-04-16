@@ -41,6 +41,6 @@
 	- custom page parser compatibility @done
 	- 0 for request limit disables @done
 	- change default page dir to www @done
-	- remove post time limiting
+	- remove post time limiting @done turns out this is already done in node
 	- allow files to be streamed instead of using lots of memory and bandwidth @done
 	- package it up and release to npm

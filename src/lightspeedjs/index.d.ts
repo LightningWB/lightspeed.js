@@ -153,10 +153,6 @@ declare namespace lightspeed
 		 */
 		postPerMinute?:10 | number,
 		/**
-		 * The amount of time in milliseconds before a post request is closed
-		 */
-		postTime?:15000 | number,
-		/**
 		 * If this is true someone can just make 404 requests and spam the console
 		 */
 		printErrors?:true | boolean,

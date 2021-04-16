@@ -51,7 +51,6 @@ function buildServer()
 		staticPage:true,
 		pagesLocation:'./www',
 		printErrors:true,
-		postTime:15*1000,
 		restApi:false,
 		restPrefix:'/rest',
 		restLocation:'/rest',
@@ -627,7 +626,6 @@ function buildServer()
 						res.end('please visit the page first');
 					}
 					ipLimit.post[req.connection.remoteAddress]= (ipLimit.post[req.connection.remoteAddress] || 0)+1;
-					const timer=setTimeout(()=>res.end(''), options.postTime);
 					let totalData = '';
 					req.on('data', chunk=>totalData+=chunk);
 					req.on('end', ()=>{
