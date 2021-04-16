@@ -49,7 +49,7 @@ function buildServer()
 	{
 		port:80,
 		staticPage:true,
-		pagesLocation:'./site',
+		pagesLocation:'./www',
 		printErrors:true,
 		postTime:15*1000,
 		restApi:false,
@@ -76,6 +76,7 @@ function buildServer()
 		log:console.log,
 		start:true,
 		plugins:[],
+		streamFiles:{},
 	}
 	// post handling stuff
 	let postFunctions = {};
@@ -187,14 +188,19 @@ function buildServer()
 		for(const i in fileNames)
 		{
 			const pageName = fileNames[i];
-			getPage
-			(
-				options,
-				pageName,
-				path.join(__dirname, options.pagesLocation),
-				//path.join(__dirname, options.te),
-				(data)=>pages[(pageName.replace(path.join(__dirname, options.pagesLocation).replace('.', ''), '').replace(/\\/g, '/')).replace(options.pagesLocation.replace('.', ''), '')]=data
-			)
+			// pop will remove the item from a junk array and return it
+			const fileType = pageName.split('.').pop();
+			if(options.streamFiles[fileType]!=true)
+			{
+				getPage
+				(
+					options,
+					pageName,
+					path.join(__dirname, options.pagesLocation),
+					//path.join(__dirname, options.te),
+					(data)=>pages[(pageName.replace(path.join(__dirname, options.pagesLocation).replace('.', ''), '').replace(/\\/g, '/')).replace(options.pagesLocation.replace('.', ''), '')]=data
+				)
+			}
 			/*fs.readFile(pageName, {}, (err, data)=>
 			{
 				if(err && options.printErrors)console.log(err);
@@ -212,13 +218,18 @@ function buildServer()
 		for(const i in fileNames)
 		{
 			const pageName = fileNames[i];
-			getPage
-			(
-				options,
-				pageName,
-				path.join(__dirname, options.pagesLocation),
-				(data)=>restData[(pageName.replace(path.join(__dirname, options.restLocation).replace('.', ''), '').replace(/\\/g, '/')).replace(options.restLocation.replace('.', ''), '')]=data
-			)
+			// pop will remove the item from a junk array and return it
+			const fileType = pageName.split('.').pop();
+			if(options.streamFiles[fileType]!=true)
+			{
+				getPage
+				(
+					options,
+					pageName,
+					path.join(__dirname, options.pagesLocation),
+					(data)=>restData[(pageName.replace(path.join(__dirname, options.restLocation).replace('.', ''), '').replace(/\\/g, '/')).replace(options.restLocation.replace('.', ''), '')]=data
+				)
+			}
 			/*fs.readFile(pageName, {}, (err, data)=>
 			{
 				if(err && options.printErrors)console.log(err);
@@ -396,9 +407,22 @@ function buildServer()
 				urlData.pathname+='.'+options.restFileExtension;
 			}
 			if(fileType==='json')res.setHeader('Content-Type', 'text/json');
-			if(restData[urlData.pathname.replace(options.restPrefix, '')]!=undefined || !options.staticPage)
+			if(restData[urlData.pathname.replace(options.restPrefix, '')]!=undefined || !options.staticPage || options.streamFiles[fileType])
 			{
-				if(options.staticPage)
+				if(options.streamFiles[fileType])
+				{
+					try
+					{
+						const stream = fs.createReadStream(path.join(__dirname, options.restLocation).replace('.', '')+String(urlData.pathname.replace(options.restPrefix, '')));
+						stream.pipe(res);
+						stream.on('end', ()=>log(req, res));
+					}
+					catch(err)
+					{
+						give404(req, res, true, true);
+					}
+				}
+				else if(options.staticPage)
 				{
 					//callFuncs(restData[urlData.pathname.replace(options.restPrefix, '')].functions, req)
 					return sendPage(req, res, restData[urlData.pathname.replace(options.restPrefix, '')], urlData, true, fileType);
@@ -434,17 +458,34 @@ function buildServer()
 			else if(fileType==='png')res.writeHead(200,{'Content-Type':'img/png'});
 			else if(fileType==='jpg')res.writeHead(200,{'Content-Type':'img/jpg'});
 			else if(fileType==='html'||fileType===undefined)res.writeHead(200,{'Content-Type':'text/html'});   
-			if(urlData.pathname[urlData.pathname.length-1]==='/')urlData.pathname+='index.html';// an example would be https:example.example/about/ would redirect to about/index.html
+			if(urlData.pathname[urlData.pathname.length-1]==='/')
+			{
+				fileType = 'html';
+				urlData.pathname+='index.html';// an example would be https:example.example/about/ would redirect to about/index.html
+			}
 			else if(fileType===undefined)
 			{
 				fileType='html';
 				urlData.pathname+='.html';
 			}// if there is no file extension and it doesnt end in /
 			// ^ an example of this is https:example.example/about would redirect to about.html
-			// static page is found or reading from files
-			if(pages[urlData.pathname]!=undefined||!options.staticPage)
+			// static page is found or reading from files or streaming this file
+			if(pages[urlData.pathname]!=undefined || !options.staticPage || options.streamFiles[fileType])
 			{
-				if(options.staticPage)
+				if(options.streamFiles[fileType])
+				{
+					try
+					{
+						const stream = fs.createReadStream(path.join(__dirname, options.pagesLocation, String(urlData.pathname)));
+						stream.pipe(res);
+						stream.on('end', ()=>log(req, res));
+					}
+					catch(err)
+					{
+						give404(req, res, true, false);
+					}
+				}
+				else if(options.staticPage)
 				{
 					return sendPage(req, res, pages[urlData.pathname], urlData, false, fileType);
 				}
@@ -540,11 +581,13 @@ function buildServer()
 				}
 				if(maxDomain!=undefined)
 				{
+					// lightspeed server
 					if(typeof subDomains[maxDomain] === 'object')
 					{
 						subDomains[maxDomain].server.emit('request', req, res);
 						return;
 					}
+					// this is express router stuff
 					else if(typeof subDomains[maxDomain] === 'function')
 					{
 						subDomains[maxDomain](req, res);
@@ -568,6 +611,7 @@ function buildServer()
 				if(req.method==='POST')
 				{
 					if(
+						options.postPerMinute !== 0 &&
 						ipLimit.post[req.connection.remoteAddress]!=undefined && 
 						ipLimit.post[req.connection.remoteAddress]>options.postPerMinute
 					)return res.end('spam');
@@ -593,7 +637,11 @@ function buildServer()
 				}
 				else
 				{
-					if(ipLimit.get[req.connection.remoteAddress]!=undefined && ipLimit.get[req.connection.remoteAddress]>options.getPerMinute)return res.end('spam');
+					if(
+						options.getPerMinute !== 0 &&
+						ipLimit.get[req.connection.remoteAddress]!=undefined &&
+						ipLimit.get[req.connection.remoteAddress]>options.getPerMinute
+					)return res.end('spam');
 					ipLimit.get[req.connection.remoteAddress]= (ipLimit.get[req.connection.remoteAddress] || 0)+1;
 					handleReq(req, res);
 				}

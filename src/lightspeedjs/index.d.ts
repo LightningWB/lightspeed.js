@@ -99,7 +99,7 @@ declare namespace lightspeed
 		/**
 		 * The directory with site pages
 		 */
-		pagesLocation?:'/site' | string,
+		pagesLocation?:'/www' | string,
 		/**
 		 * allows a custom parser to be used in place of the custom default one
 		 */
@@ -194,6 +194,13 @@ declare namespace lightspeed
 		 * Serve files from the disk or memory
 		 */
 		staticPage?:true | boolean,
+		/**
+		 * File types to be streamed instead of being stored in memory and kept there. Bypasses page parser and global text. Useful for stuff like videos and images.
+		 */
+		streamFiles:{[key:string]:boolean},
+		/**
+		 * Subdomains to be used
+		 */
 		subDomains?:{[key:string]:serverAccess},
 		/**
 		 * File extension to be sued for template files

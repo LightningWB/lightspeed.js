@@ -77,7 +77,7 @@ const server = lightspeed({
 		express:app
 	},
 	plugins:[
-		require('./exPlugin')
+		//require('./exPlugin')
 	],
 	parser:{
 		compile:(file, path)=>{
@@ -87,6 +87,10 @@ const server = lightspeed({
 			if(url.pathname.split('.')[1] != 'html')return file;
 			return ejs.render(file.toString(), {users:[{name:'Josh', age:'100'}, {name:'Jish', age:'1001'}, {name:'Jush', age:'00'}, {name:'Jash', age:'010'}]}, {});
 		}
+	},
+	streamFiles:{
+		'html':true,
+		'ico':true
 	}
 });
 
