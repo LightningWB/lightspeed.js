@@ -405,7 +405,7 @@ function buildServer()
 				fileType='json';
 				urlData.pathname+='.'+options.restFileExtension;
 			}
-			if(fileType==='json')res.setHeader('Content-Type', 'text/json');
+			if(fileType==='json')res.setHeader('Content-Type', 'text/json; charset=UTF-8');
 			if(restData[urlData.pathname.replace(options.restPrefix, '')]!=undefined || !options.staticPage || options.streamFiles[fileType])
 			{
 				if(options.streamFiles[fileType])
@@ -452,11 +452,11 @@ function buildServer()
 		}
 		else// any other page
 		{
-			if(fileType==='css')res.writeHead(200,{'Content-Type':'text/css'});
-			else if(fileType==='js')res.writeHead(200,{'Content-Type':'text/js'});
+			if(fileType==='css')res.writeHead(200,{'Content-Type':'text/css; charset=UTF-8'});
+			else if(fileType==='js')res.writeHead(200,{'Content-Type':'text/js; charset=UTF-8'});
 			else if(fileType==='png')res.writeHead(200,{'Content-Type':'img/png'});
 			else if(fileType==='jpg')res.writeHead(200,{'Content-Type':'img/jpg'});
-			else if(fileType==='html'||fileType===undefined)res.writeHead(200,{'Content-Type':'text/html'});   
+			else if(fileType==='html'||fileType===undefined)res.writeHead(200,{'Content-Type':'text/html; charset=UTF-8'});   
 			if(urlData.pathname[urlData.pathname.length-1]==='/')
 			{
 				fileType = 'html';
