@@ -79,7 +79,7 @@ const server = lightspeed({
 	plugins:[
 		//require('./exPlugin')
 	],
-	parser:{
+	parser: {
 		compile:(file, path)=>{
 			return file;
 		},

@@ -26,7 +26,7 @@
 		- csrf protection @done
 		if any other vulnerabilities can be done without restricting the developer then they should be added here
 	- name it @done
-	- examples and make documentation site for it
+	- examples and make documentation site for it @done
 	- github stuff @done
 	- make it not run in a vm but have it all be scoped in a function @done
 	- html encoding @done
@@ -35,7 +35,7 @@
 	plugin support:
 		- modify options @done
 		- modify incoming request/outgoing result @done
-		- documentation
+		- documentation @done
 	- add a way to add custom text to every page @done
 	- express compatability through subdomains @done
 	- custom page parser compatibility @done

@@ -392,7 +392,7 @@ function buildServer()
 		const splitUp = urlData.pathname.split('.');
 		let fileType = splitUp.length===1?undefined:splitUp[splitUp.length-1];// it uses undefined later on to add .html if it has no extension
 		if(!options.iframe)res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-		if(options.csrfProtection)res.setHeader('set-cookie', 'csrfProtectionToken=true; Max-Age=86400; HttpOnly; SameSite=Strict');// a cookie with a max age of a day
+		if(options.csrfProtection)res.setHeader('set-cookie', 'csrfProtectionToken=true; Max-Age=86400; HttpOnly; SameSite=Strict; path=/');// a cookie with a max age of a day
 		if(options.restApi && urlData.pathname.indexOf(options.restPrefix+'/')==0)// rest api
 		{
 			if(urlData.pathname[urlData.pathname.length-1]==='/')
@@ -478,6 +478,10 @@ function buildServer()
 						const stream = fs.createReadStream(path.join(__dirname, options.pagesLocation, String(urlData.pathname)));
 						stream.pipe(res);
 						stream.on('end', ()=>log(req, res));
+						stream.on('error', err=>{
+							give404(req, res, true, false);
+							stream.close();
+						});
 					}
 					catch(err)
 					{
@@ -629,7 +633,6 @@ function buildServer()
 					let totalData = '';
 					req.on('data', chunk=>totalData+=chunk);
 					req.on('end', ()=>{
-						clearTimeout(timer);
 						callPost(totalData, req, res);
 					});
 				}

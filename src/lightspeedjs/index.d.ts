@@ -52,7 +52,8 @@ declare namespace lightspeed
 	 * @param length 
 	 */
 	export function randomString(length:number): string;
-	type postRequests = postCB | {postRequests};
+	export type server = serverAccess;
+	type postRequests = postCB | {[key:string]:postRequests};
 	/**
 	 * Options to start the server
 	 */

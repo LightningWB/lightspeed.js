@@ -1,7 +1,6 @@
 "use strict";
 const fs = require('fs');
 const path = require('path');
-const { isRegExp } = require('util');
 const crypto = require('./crypto');
 const settings =
 {
