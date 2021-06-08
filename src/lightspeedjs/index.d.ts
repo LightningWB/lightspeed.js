@@ -193,7 +193,7 @@ declare namespace lightspeed
 		/**
 		 * File types to be streamed instead of being stored in memory and kept there. Bypasses page parser and global text. Useful for stuff like videos and images.
 		 */
-		streamFiles:{[key:string]:boolean},
+		streamFiles?:{[key:string]:boolean},
 		/**
 		 * Subdomains to be used
 		 */
