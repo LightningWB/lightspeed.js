@@ -10,6 +10,10 @@ type serverAccess =
 	 */
 	reloadFiles:reloadFiles,
 	/**
+	 * reloads the post request tree to allow changes to be made
+	 */
+	reloadPosts: ()=>any,
+	/**
 	 * the server object
 	 */
 	server:http.Server,

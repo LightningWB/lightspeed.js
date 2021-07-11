@@ -1,6 +1,6 @@
 //#region imports
 "use strict";
-__dirname = require.main.path;
+__dirname = require.main.path || '';
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
@@ -692,7 +692,7 @@ function buildServer()
 			server.listen(options.port);
 		}
 		if(options.start)start();
-		return {server:server, reloadFiles:reloadFiles, start:start};
+		return {server:server, reloadFiles:reloadFiles, start:start, reloadPosts: ()=>postFunctions = loadPosts(options.posts)};
 	}
 	return startServer;
 }
