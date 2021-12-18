@@ -153,6 +153,8 @@ function getVariables(action)
  */
 module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.log)
 {
+	const fileType = path.extname(pagePath);
+	const binaryTypes = ['.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.webp'];
 	fs.readFile
 	(
 		pagePath,
@@ -176,7 +178,7 @@ module.exports=function getPage(options, pagePath, homeLocation, cb, er=console.
 							page:await options.parser.compile(data, pagePath)
 					});
 				}
-				else if(data!=undefined && data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// only do this if it is doing special commands
+				else if(data!=undefined && data.includes(settings.startPrefix) && data.includes(settings.endPrefix) && !binaryTypes.includes(fileType))// only do this if it is doing special commands
 				{
 					while(data.includes(settings.startPrefix) && data.includes(settings.endPrefix))// turns out that doing a while loop and adding data to it automatically parses included files
 					{
